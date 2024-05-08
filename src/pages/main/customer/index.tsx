@@ -93,15 +93,11 @@ export default function Customer() {
                     modal?.key == "create" || modal?.key == "update" ? <Modal open={modal.open} setOpen={() => setModal({ ...modal, open: false })}>
                         <h2 className='text-xl font-semibold text-center'>{modal.key == 'create' ? "Tambah" : "Ubah"} Pelanggan</h2>
                         <form>
-                            <div className='flex gap-2 lg:flex-row flex-col'>
-                                <Input label='Nama' placeholder='Masukkan Nama' name='name' defaultValue={modal?.data?.name || ""} required />
-                                <Input label='NIK' placeholder='Masukkan NIK' name='nik' defaultValue={modal?.data?.nik || ""} maxLength={16} />
-                            </div>
-                            <div className='flex gap-2 lg:flex-row flex-col'>
-                                <Input label='No Telepon' placeholder='Masukkan No Telepon' name='phone' type='number' defaultValue={modal?.data?.phone || ""} required />
-                                <Input label='Email' placeholder='Masukkan Email' name='email' type='email' defaultValue={modal?.data?.email || ""} />
-                            </div>
-                            <div className='flex gap-2 lg:flex-row flex-col justify-end'>
+                            <Input label='Nama' placeholder='Masukkan Nama' name='name' defaultValue={modal?.data?.name || ""} required />
+                            <Input label='NIK' placeholder='Masukkan NIK' name='nik' defaultValue={modal?.data?.nik || ""} maxLength={16} />
+                            <Input label='No Telepon' placeholder='Masukkan No Telepon' name='phone' type='number' defaultValue={modal?.data?.phone || ""} required />
+                            <Input label='Email' placeholder='Masukkan Email' name='email' type='email' defaultValue={modal?.data?.email || ""} />
+                            <div className='flex lg:gap-2 gap-0 lg:flex-row flex-col-reverse justify-end'>
                                 <div>
                                     <Button color='white' type='button' onClick={() => {
                                         setModal({ open: false })
@@ -111,7 +107,7 @@ export default function Customer() {
                                 </div>
 
                                 <div>
-                                    <Button color='info' className={'flex gap-2 px-2 items-center'}>
+                                    <Button color='info' className={'flex gap-2 px-2 items-center justify-center'}>
                                         <SaveAllIcon className='w-4 h-4' />
                                         Simpan
                                     </Button>
@@ -128,7 +124,7 @@ export default function Customer() {
                         <form>
                             <input type="hidden" name="id" value={modal?.data?.id} />
                             <p className='text-center my-2'>Apakah anda yakin ingin menghapus data {modal?.data?.name}?</p>
-                            <div className='flex gap-2 lg:flex-row flex-col justify-end'>
+                            <div className='flex gap-2 lg:flex-row flex-col-reverse justify-end'>
                                 <div>
                                     <Button color='white' type='button' onClick={() => {
                                         setModal({ open: false })
@@ -138,7 +134,7 @@ export default function Customer() {
                                 </div>
 
                                 <div>
-                                    <Button color='danger' className={'flex gap-2 px-2 items-center'}>
+                                    <Button color='danger' className={'flex gap-2 px-2 items-center justify-center'}>
                                         <Trash2Icon className='w-4 h-4' />
                                         Hapus
                                     </Button>

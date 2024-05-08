@@ -155,7 +155,7 @@ export default function Property() {
                                     : ""
                             }
                             <input type="hidden" name="id" value={modal?.data?.id || ""} />
-                            <div className='flex gap-2 lg:flex-row flex-col justify-end'>
+                            <div className='flex lg:gap-2 gap-0 lg:flex-row flex-col-reverse justify-end'>
                                 <div>
                                     <Button color='white' type='button' onClick={() => {
                                         setModal({ open: false })
@@ -165,7 +165,7 @@ export default function Property() {
                                 </div>
 
                                 <div>
-                                    <Button color='info' className={'flex gap-2 px-2 items-center'}>
+                                    <Button color='info' className={'flex gap-2 px-2 items-center justify-center'}>
                                         <SaveAllIcon className='w-4 h-4' />
                                         Simpan
                                     </Button>
@@ -182,7 +182,7 @@ export default function Property() {
                         <form>
                             <input type="hidden" name="id" value={modal?.data?.id} />
                             <p className='text-center my-2'>Apakah anda yakin ingin menghapus data {modal?.data?.name}?</p>
-                            <div className='flex gap-2 lg:flex-row flex-col justify-end'>
+                            <div className='flex lg:gap-2 gap-0 lg:flex-row flex-col-reverse justify-end'>
                                 <div>
                                     <Button color='white' type='button' onClick={() => {
                                         setModal({ open: false })
@@ -192,7 +192,7 @@ export default function Property() {
                                 </div>
 
                                 <div>
-                                    <Button color='danger' className={'flex gap-2 px-2 items-center'}>
+                                    <Button color='danger' className={'flex gap-2 px-2 items-center justify-center'}>
                                         <Trash2Icon className='w-4 h-4' />
                                         Hapus
                                     </Button>

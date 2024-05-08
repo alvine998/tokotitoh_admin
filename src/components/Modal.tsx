@@ -48,7 +48,7 @@ export default function Modal(props: Props) {
                                 leaveFrom="opacity-100 translate-y-0 sm:scale-100"
                                 leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                             >
-                                <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:py-4 sm:px-10 sm:w-[50%] w-full">
+                                <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all lg:py-4 lg:px-10 lg:w-[50%] w-full py-2 px-2">
                                     {children}
                                 </Dialog.Panel>
 
