@@ -2,7 +2,7 @@ import Button from '@/components/Button'
 import { useRouter } from 'next/router'
 import React from 'react'
 
-export default function index() {
+export default function Error404() {
     const router = useRouter();
     return (
         <div className='flex flex-col justify-center items-center mt-[250px]'>

@@ -4,7 +4,7 @@ import Head from 'next/head'
 import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
 
-export default function index() {
+export default function Login() {
     const router = useRouter();
     const [position, setPosition] = useState<string>('login')
     return (

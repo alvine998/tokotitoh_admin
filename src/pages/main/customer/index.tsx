@@ -15,7 +15,7 @@ const data: any = [
     }
 ]
 
-export default function index() {
+export default function Customer() {
     const [show, setShow] = useState<boolean>(false)
     const [modal, setModal] = useState<useModal>()
     useEffect(() => {
