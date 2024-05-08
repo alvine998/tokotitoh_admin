@@ -1,5 +1,5 @@
 import { Menu, MenuButton, MenuItem, MenuItems, Transition } from '@headlessui/react';
-import { ChevronDownCircle, DoorOpenIcon, HomeIcon, PencilIcon, UserCircle, UserIcon } from 'lucide-react'
+import { BookIcon, Building2Icon, ChevronDownCircle, DoorOpenIcon, HomeIcon, NewspaperIcon, PencilIcon, UserCircle, UserIcon, Users2Icon, Wallet2Icon } from 'lucide-react'
 import { useRouter } from 'next/router'
 import React, { ReactNode } from 'react'
 
@@ -16,7 +16,32 @@ export default function NavbarDesktop({ children, session }: { children: ReactNo
             name: "Pelanggan",
             href: `/main/customer`,
             icon: <UserIcon />
-        }
+        },
+        {
+            name: "Properti",
+            href: `/main/property`,
+            icon: <Building2Icon />
+        },
+        {
+            name: "Booking",
+            href: `/main/booking`,
+            icon: <BookIcon />
+        },
+        {
+            name: "Pembayaran",
+            href: `/main/payment`,
+            icon: <Wallet2Icon />
+        },
+        {
+            name: "Laporan",
+            href: `/main/report`,
+            icon: <NewspaperIcon />
+        },
+        {
+            name: "Partner",
+            href: `/main/partner`,
+            icon: <Users2Icon />
+        },
     ]
     return (
         <div className='overflow-hidden'>

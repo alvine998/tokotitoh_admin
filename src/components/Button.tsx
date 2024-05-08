@@ -29,7 +29,7 @@ export default function Button(props: Props) {
             }
             {
                 color == 'warning' &&
-                <button {...props} className={'w-full p-1 bg-yellow-700 hover:bg-yrllow-500 duration-150 transition-all rounded-md text-black ' + className}>
+                <button {...props} className={'w-full p-1 bg-orange-600 hover:bg-orange-500 duration-150 transition-all rounded-md text-white ' + className}>
                     {children}
                 </button>
             }
@@ -41,7 +41,7 @@ export default function Button(props: Props) {
             }
             {
                 color == 'white' &&
-                <button {...props} className={'w-full p-1 bg-white duration-150 transition-all rounded-md text-black ' + className}>
+                <button {...props} className={'w-full p-1 bg-white duration-150 transition-all rounded-md text-black border border-gray-300 px-2 ' + className}>
                     {children}
                 </button>
             }
