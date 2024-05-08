@@ -64,7 +64,7 @@ export default function PropertyTabs({ children, id }: { children: ReactNode, id
                             router.pathname?.includes(v?.active) ?
                                 `p-2 bg-blue-500 text-white rounded w-[200px]` :
                                 `p-2 bg-blue-300 hover:bg-blue-500 text-white rounded w-[200px] duration-200 transition-all`}
-                            onClick={() => router.push(v?.href)}
+                            onClick={() => router.push(v?.href, v?.href, {scroll: false})}
                         >
                             {v?.name}
                         </button>
