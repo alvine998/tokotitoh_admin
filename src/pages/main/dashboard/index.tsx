@@ -44,6 +44,7 @@ export default function index() {
             </div>
 
             <div className='mt-5'>
+                <h2 className='text-xl'>Perkembangan Pendapatan</h2>
                 <ApexChart />
             </div>
         </div>
