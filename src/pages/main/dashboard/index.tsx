@@ -43,7 +43,7 @@ export default function index() {
                 </div>
             </div>
 
-            <div>
+            <div className='mt-5'>
                 <ApexChart />
             </div>
         </div>
