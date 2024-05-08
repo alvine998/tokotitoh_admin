@@ -2,6 +2,7 @@ import Button from '@/components/Button'
 import Input from '@/components/Input'
 import Modal, { useModal } from '@/components/Modal'
 import { CustomTableStyle } from '@/components/table/CustomTableStyle'
+import PropertyTabs from '@/components/tabs/PropertyTabs'
 import { EyeIcon, PencilIcon, PlusIcon, SaveAllIcon, Trash2Icon, TrashIcon } from 'lucide-react'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
@@ -11,17 +12,30 @@ import ReactSelect from 'react-select'
 const data: any = [
     {
         id: 1,
-        name: "Homestay Banyuwangi Indah 2",
-        pic_name: "Alba",
-        pic_phone: "089975756474",
-        pic_email: "alba@gmail.com",
-        pic_id: 1,
-        type: "homestay",
-        status: 1
+        code: "01",
+        type_id: 1,
+        type_name: "Standar",
+        status: 0
     }
 ]
 
-export default function Property() {
+export async function getServerSideProps(context: any) {
+    try {
+        const { page, limit } = context.query;
+        const { id } = context.params;
+        // const result = await axios.get(CONFIG.BASE_URL_API.v1 + `/feature?page=${page || 1}&limit=${limit || 10}`)
+        return {
+            props: {
+                // table: result?.data
+                id
+            }
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export default function PropertyRoomType({ id }: any) {
     const router = useRouter();
     const [show, setShow] = useState<boolean>(false)
     const [modal, setModal] = useState<useModal>()
@@ -30,63 +44,6 @@ export default function Property() {
             setShow(true)
         }
     }, [])
-    const Column: any = [
-        {
-            name: "Nama",
-            sortable: true,
-            width:'250px',
-            selector: (row: any) => row?.name
-        },
-        {
-            name: "Jenis",
-            sortable: true,
-            selector: (row: any) => row?.type?.toUpperCase()
-        },
-        {
-            name: "Nama PIC",
-            sortable: true,
-            width:'200px',
-            selector: (row: any) => row?.pic_name || "-"
-        },
-        {
-            name: "No Telepon PIC",
-            width:'200px',
-            selector: (row: any) => row?.pic_phone
-        },
-        {
-            name: "Email PIC",
-            sortable: true,
-            width:'200px',
-            selector: (row: any) => row?.pic_email || "-"
-        },
-        {
-            name: "Status",
-            sortable: true,
-            selector: (row: any) => row?.status == 1 ? "Aktif" : "Non Aktif"
-        },
-        {
-            name: "Aksi",
-            right: true,
-            width: "150px",
-            selector: (row: any) => <div className='flex gap-2 flex-row'>
-                <Button title='Detail' color='warning' type='button' onClick={() => {
-                    router.push(`/main/property/${row?.id}/type`)
-                }}>
-                    <EyeIcon className='text-white w-5 h-5' />
-                </Button>
-                <Button title='Edit' color='primary' type='button' onClick={() => {
-                    setModal({ ...modal, open: true, data: row, key: "update" })
-                }}>
-                    <PencilIcon className='text-white w-5 h-5' />
-                </Button>
-                <Button title='Hapus' color='danger' type='button' onClick={() => {
-                    setModal({ ...modal, open: true, data: row, key: "delete" })
-                }}>
-                    <TrashIcon className='text-white w-5 h-5' />
-                </Button>
-            </div>
-        },
-    ]
 
     const types = [
         { value: "homestay", label: "Homestay" },
@@ -94,8 +51,8 @@ export default function Property() {
         { value: "villa", label: "Villa" }
     ]
     return (
-        <div>
-            <h2 className='text-2xl font-semibold'>Properti</h2>
+        <PropertyTabs id={id}>
+            <h2 className='text-2xl font-semibold'>Tipe Ruangan</h2>
 
             <div className='mt-5'>
                 <div className='flex lg:flex-row flex-col justify-between items-center'>
@@ -107,25 +64,17 @@ export default function Property() {
                             setModal({ ...modal, open: true, data: null, key: "create" })
                         }}>
                             <PlusIcon className='w-4' />
-                            Properti
+                            Tipe Ruangan
                         </Button>
                     </div>
                 </div>
                 <div className='mt-5'>
-                    {
-                        show &&
-                        <DataTable
-                            columns={Column}
-                            data={data}
-                            selectableRows
-                            customStyles={CustomTableStyle}
-                        />
-                    }
+
                 </div>
 
                 {
                     modal?.key == "create" || modal?.key == "update" ? <Modal open={modal.open} setOpen={() => setModal({ ...modal, open: false })}>
-                        <h2 className='text-xl font-semibold text-center'>{modal.key == 'create' ? "Tambah" : "Ubah"} Properti</h2>
+                        <h2 className='text-xl font-semibold text-center'>{modal.key == 'create' ? "Tambah" : "Ubah"} Tipe Ruangan</h2>
                         <form>
                             <Input label='Nama Properti' placeholder='Masukkan Nama Properti' name='name' defaultValue={modal?.data?.name || ""} required />
                             <div className='w-full my-2'>
@@ -182,7 +131,7 @@ export default function Property() {
                 }
                 {
                     modal?.key == "delete" ? <Modal open={modal.open} setOpen={() => setModal({ ...modal, open: false })}>
-                        <h2 className='text-xl font-semibold text-center'>Hapus Properti</h2>
+                        <h2 className='text-xl font-semibold text-center'>Hapus Tipe Ruangan</h2>
                         <form>
                             <input type="hidden" name="id" value={modal?.data?.id} />
                             <p className='text-center my-2'>Apakah anda yakin ingin menghapus data {modal?.data?.name}?</p>
@@ -208,6 +157,6 @@ export default function Property() {
                         : ""
                 }
             </div>
-        </div>
+        </PropertyTabs>
     )
 }
