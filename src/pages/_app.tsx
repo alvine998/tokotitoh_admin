@@ -7,7 +7,7 @@ import NextNProgress from 'nextjs-progressbar'
 
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
-  return !router.pathname?.includes('login') ?
+  return !router.pathname?.includes('login') && router.pathname?.includes('/main') ?
     <RootLayout>
       <NextNProgress color="#265fa3" nonce="my-nonce" />
       <LayoutDashboard session={pageProps?.session}>
