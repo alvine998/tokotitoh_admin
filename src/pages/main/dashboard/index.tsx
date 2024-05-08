@@ -6,10 +6,10 @@ export default function Dashboard() {
         <div>
 
             <div className='bg-blue-500 w-full h-auto p-2 rounded'>
-                <p className='text-white text-xl'>Selamat Datang Admin</p>
+                <p className='text-white text-xl lg:text-left text-center'>Selamat Datang Admin</p>
             </div>
 
-            <div className='flex gap-2 justify-between items-center mt-5'>
+            <div className='flex lg:flex-row flex-col gap-2 justify-between items-center mt-5'>
                 <div className='bg-green-500 w-full h-auto p-2 rounded'>
                     <h5 className='text-white font-semibold text-xl'>Total Pengeluaran :</h5>
                     <p className='text-white text-xl'>Rp 10.000.000</p>
@@ -21,7 +21,7 @@ export default function Dashboard() {
                 </div>
             </div>
 
-            <div className='flex gap-2 justify-between items-center mt-5'>
+            <div className='flex lg:flex-row flex-col gap-2 justify-between items-center mt-5'>
                 <div className='bg-green-500 w-full h-auto p-2 rounded'>
                     <h5 className='text-white font-semibold text-xl'>Total Pengguna :</h5>
                     <p className='text-white text-xl'>50</p>

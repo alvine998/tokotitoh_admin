@@ -65,12 +65,12 @@ export default function Customer() {
             <h2 className='text-2xl font-semibold'>Pelanggan</h2>
 
             <div className='mt-5'>
-                <div className='flex justify-between items-center'>
-                    <div>
+                <div className='flex lg:flex-row flex-col justify-between items-center'>
+                    <div className='lg:w-auto w-full'>
                         <Input label='' type='search' placeholder='Cari disini...' />
                     </div>
-                    <div>
-                        <Button type='button' color='info' className={'flex gap-2 px-2'} onClick={() => {
+                    <div className='lg:w-auto w-full'>
+                        <Button type='button' color='info' className={'flex gap-2 px-2 items-center lg:justify-start justify-center'} onClick={() => {
                             setModal({ ...modal, open: true, data: null, key: "create" })
                         }}>
                             <PlusIcon className='w-4' />
@@ -78,15 +78,17 @@ export default function Customer() {
                         </Button>
                     </div>
                 </div>
-                {
-                    show &&
-                    <DataTable
-                        columns={CustomerColumn}
-                        data={data}
-                        selectableRows
-                        customStyles={CustomTableStyle}
-                    />
-                }
+                <div className='mt-5'>
+                    {
+                        show &&
+                        <DataTable
+                            columns={CustomerColumn}
+                            data={data}
+                            selectableRows
+                            customStyles={CustomTableStyle}
+                        />
+                    }
+                </div>
                 {
                     modal?.key == "create" || modal?.key == "update" ? <Modal open={modal.open} setOpen={() => setModal({ ...modal, open: false })}>
                         <h2 className='text-xl font-semibold text-center'>{modal.key == 'create' ? "Tambah" : "Ubah"} Pelanggan</h2>
