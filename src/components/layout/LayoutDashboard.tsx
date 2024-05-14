@@ -7,7 +7,7 @@ export default function LayoutDashboard({ children, session }: { children: React
     return (
         <section className='min-h-screen overflow-x-hidden relative'>
             <Head>
-                <title>Dashboard - Cakarooms</title>
+                <title>Dashboard - Tokotitoh</title>
             </Head>
             <div className='lg:block hidden'>
                 <NavbarDesktop session={session}>
