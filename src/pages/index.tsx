@@ -8,7 +8,6 @@ import Swal from 'sweetalert2'
 
 export default function Login() {
   const router = useRouter();
-  const [position, setPosition] = useState<string>('login')
 
   const login = async (e: any) => {
     e?.preventDefault();
@@ -20,7 +19,7 @@ export default function Login() {
           text: "Email / No Telepon tidak terdaftar!"
         })
       }
-      if (formData?.password !== "admincaka123") {
+      if (formData?.password !== "admintokotitoh") {
         return Swal.fire({
           icon: "error",
           text: "Password Salah!"

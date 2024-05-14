@@ -1,5 +1,6 @@
 import { Menu, MenuButton, MenuItem, MenuItems, Transition } from '@headlessui/react';
 import { BookIcon, Building2Icon, ChevronDownCircle, DoorOpenIcon, HomeIcon, NewspaperIcon, PencilIcon, UserCircle, UserIcon, Users2Icon, Wallet2Icon } from 'lucide-react'
+import Image from 'next/image';
 import { useRouter } from 'next/router'
 import React, { ReactNode } from 'react'
 
@@ -13,40 +14,40 @@ export default function NavbarDesktop({ children, session }: { children: ReactNo
             icon: <HomeIcon />
         },
         {
-            name: "Pelanggan",
+            name: "Pengguna",
             href: `/main/customer`,
             icon: <UserIcon />
         },
         {
-            name: "Properti",
-            href: `/main/property`,
+            name: "Iklan",
+            href: `/main/ads`,
             icon: <Building2Icon />
         },
         {
-            name: "Booking",
-            href: `/main/booking`,
+            name: "Kategori",
+            href: `/main/category`,
             icon: <BookIcon />
         },
-        {
-            name: "Pembayaran",
-            href: `/main/payment`,
-            icon: <Wallet2Icon />
-        },
+        // {
+        //     name: "Pembayaran",
+        //     href: `/main/payment`,
+        //     icon: <Wallet2Icon />
+        // },
         {
             name: "Laporan",
             href: `/main/report`,
             icon: <NewspaperIcon />
         },
         {
-            name: "Partner",
-            href: `/main/partner`,
+            name: "Akses",
+            href: `/main/user`,
             icon: <Users2Icon />
         },
     ]
     return (
         <div className='overflow-hidden'>
             {/* Topbar */}
-            <div className='bg-blue-500 w-full h-10 flex justify-end items-center px-10'>
+            <div className='bg-green-600 w-full h-10 flex justify-end items-center px-10'>
                 {/* <button className='flex items-center gap-2'>
                    
                 </button> */}
@@ -67,12 +68,12 @@ export default function NavbarDesktop({ children, session }: { children: ReactNo
                             anchor="bottom end"
                             className="w-40 origin-top-right rounded-xl border border-white/5 bg-white p-1 text-sm/6 text-white [--anchor-gap:var(--spacing-1)] focus:outline-none"
                         >
-                            <MenuItem>
+                            {/* <MenuItem>
                                 <button className="group flex w-full items-center gap-2 rounded-lg py-1.5 px-3 data-[focus]:bg-white text-black">
                                     <UserCircle className="size-4 text-black" />
                                     Ubah Profil
                                 </button>
-                            </MenuItem>
+                            </MenuItem> */}
                             <MenuItem>
                                 <button className="group flex w-full items-center gap-2 rounded-lg py-1.5 px-3 data-[focus]:bg-white text-red-500">
                                     <DoorOpenIcon className="size-4 text-red-500" />
@@ -86,8 +87,11 @@ export default function NavbarDesktop({ children, session }: { children: ReactNo
 
             <div className='flex'>
                 {/* Sidebar */}
-                <div className='bg-blue-500 w-1/6 h-[100vh] absolute z-10 top-0 left-0 pt-2'>
-                    <h2 className='text-white text-2xl text-center'>TOKOTITOH</h2>
+                <div className='bg-green-600 w-1/6 h-[100vh] absolute z-10 top-0 left-0 pt-2'>
+                    <div className='flex justify-center items-center gap-5'>
+                        <Image alt='logo' src={'/images/tokotitoh.png'} layout='relative' width={300} height={300} className='w-10 h-10' />
+                        <h2 className='text-white text-2xl text-center'>TOKOTITOH</h2>
+                    </div>
                     <div className='flex flex-col mt-5'>
                         {
                             navs?.map((v: any) => (

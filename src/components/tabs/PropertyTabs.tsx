@@ -8,36 +8,31 @@ export default function PropertyTabs({ children, id }: { children: ReactNode, id
     console.log(router.pathname, 'path');
     const tabs = [
         {
-            name: "Fasilitas",
-            href: `/main/property/${id}/facilities`,
-            active: 'facilities'
+            name: "Sub Kategori",
+            href: `/main/category/${id}/subcategory`,
+            active: 'subcategory'
+        },
+        {
+            name: "Brand",
+            href: `/main/category/${id}/brand`,
+            active: 'brand'
         },
         {
             name: "Tipe",
-            href: `/main/property/${id}/type`,
+            href: `/main/category/${id}/type`,
             active: 'type'
-        },
-        {
-            name: "Ruangan",
-            href: `/main/property/${id}/room`,
-            active: 'room'
         },
     ]
 
-    const descdata = [
-        { title: "Nama Properti", value: "Homestay Banyuwangi Indah 2" },
-        { title: "Jenis Properti", value: "Homestay" },
-        { title: "Status", value: "Aktif" },
-        { title: "Nama PIC", value: "Alba" },
-        { title: "Email PIC", value: "alba@gmail.com" },
-        { title: "No Telepon PIC", value: "085746463535" },
-    ]
+    // const descdata = [
+    //     { title: "Kategori", value: "Mobil" },
+    // ]
     return (
         <div>
             <div className='flex'>
                 <div>
                     <Button type='button' className={'flex gap-2'} color='white' onClick={() => {
-                        router.push('/main/property')
+                        router.push('/main/category')
                     }}>
                         <ChevronLeft />
                         Kembali
@@ -45,8 +40,8 @@ export default function PropertyTabs({ children, id }: { children: ReactNode, id
                 </div>
             </div>
             <div className='bg-white shadow-lg rounded w-full p-4 h-full'>
-                <h5 className='font-semibold text-xl'>Detail Properti</h5>
-                <div className='flex gap-2 justify-between items-center flex-wrap mt-4'>
+                <h5 className='font-semibold text-xl'>Detail Kategori Mobil</h5>
+                {/* <div className='flex gap-2 justify-between items-center flex-wrap mt-4'>
                     {
                         descdata?.map((v: any) => (
                             <div key={v?.title} className='w-[300px] border-b border-b-gray-300 lg:mt-0 mt-2'>
@@ -55,7 +50,7 @@ export default function PropertyTabs({ children, id }: { children: ReactNode, id
                             </div>
                         ))
                     }
-                </div>
+                </div> */}
             </div>
             <div className='flex gap-2 lg:flex-wrap flex-nowrap lg:overflow-x-hidden overflow-x-auto mt-5'>
                 {

@@ -12,11 +12,16 @@ import ReactSelect from 'react-select'
 const data: any = [
     {
         id: 1,
-        code: "01",
-        type_id: 1,
-        type_name: "Standar",
-        status: 0
-    }
+        name: "Mobil Dijual",
+    },
+    {
+        id: 2,
+        name: "Mobil Disewakan",
+    },
+    {
+        id: 3,
+        name: "Sparepart",
+    },
 ]
 
 export async function getServerSideProps(context: any) {
@@ -44,6 +49,28 @@ export default function PropertyRoomType({ id }: any) {
             setShow(true)
         }
     }, [])
+    const Column: any = [
+        {
+            name: "Nama",
+            sortable: true,
+            selector: (row: any) => row?.name
+        },
+        {
+            name: "Aksi",
+            selector: (row: any) => <div className='flex gap-2 flex-row'>
+                <Button title='Edit' color='primary' type='button' onClick={() => {
+                    setModal({ ...modal, open: true, data: row, key: "update" })
+                }}>
+                    <PencilIcon className='text-white w-5 h-5' />
+                </Button>
+                <Button title='Hapus' color='danger' type='button' onClick={() => {
+                    setModal({ ...modal, open: true, data: row, key: "delete" })
+                }}>
+                    <TrashIcon className='text-white w-5 h-5' />
+                </Button>
+            </div>
+        },
+    ]
 
     const types = [
         { value: "homestay", label: "Homestay" },
@@ -52,7 +79,7 @@ export default function PropertyRoomType({ id }: any) {
     ]
     return (
         <PropertyTabs id={id}>
-            <h2 className='text-2xl font-semibold'>Tipe Ruangan</h2>
+            <h2 className='text-2xl font-semibold'>Sub Kategori</h2>
 
             <div className='mt-5'>
                 <div className='flex lg:flex-row flex-col justify-between items-center'>
@@ -64,20 +91,27 @@ export default function PropertyRoomType({ id }: any) {
                             setModal({ ...modal, open: true, data: null, key: "create" })
                         }}>
                             <PlusIcon className='w-4' />
-                            Tipe Ruangan
+                            Sub Kategori
                         </Button>
                     </div>
                 </div>
                 <div className='mt-5'>
-
+                    {
+                        show &&
+                        <DataTable
+                            columns={Column}
+                            data={data}
+                            customStyles={CustomTableStyle}
+                        />
+                    }
                 </div>
 
                 {
                     modal?.key == "create" || modal?.key == "update" ? <Modal open={modal.open} setOpen={() => setModal({ ...modal, open: false })}>
-                        <h2 className='text-xl font-semibold text-center'>{modal.key == 'create' ? "Tambah" : "Ubah"} Tipe Ruangan</h2>
+                        <h2 className='text-xl font-semibold text-center'>{modal.key == 'create' ? "Tambah" : "Ubah"} Sub Kategori</h2>
                         <form>
-                            <Input label='Nama Properti' placeholder='Masukkan Nama Properti' name='name' defaultValue={modal?.data?.name || ""} required />
-                            <div className='w-full my-2'>
+                            <Input label='Nama Sub Kategori' placeholder='Masukkan Nama Sub Kategori' name='name' defaultValue={modal?.data?.name || ""} required />
+                            {/* <div className='w-full my-2'>
                                 <label className='text-gray-500' htmlFor="x">Jenis Properti</label>
                                 <ReactSelect
                                     options={types}
@@ -106,7 +140,7 @@ export default function PropertyRoomType({ id }: any) {
                                         </div>
                                     </div>
                                     : ""
-                            }
+                            } */}
                             <input type="hidden" name="id" value={modal?.data?.id || ""} />
                             <div className='flex lg:gap-2 gap-0 lg:flex-row flex-col-reverse justify-end'>
                                 <div>
@@ -131,7 +165,7 @@ export default function PropertyRoomType({ id }: any) {
                 }
                 {
                     modal?.key == "delete" ? <Modal open={modal.open} setOpen={() => setModal({ ...modal, open: false })}>
-                        <h2 className='text-xl font-semibold text-center'>Hapus Tipe Ruangan</h2>
+                        <h2 className='text-xl font-semibold text-center'>Hapus Sub Kategori</h2>
                         <form>
                             <input type="hidden" name="id" value={modal?.data?.id} />
                             <p className='text-center my-2'>Apakah anda yakin ingin menghapus data {modal?.data?.name}?</p>
