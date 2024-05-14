@@ -110,7 +110,7 @@ export default function User() {
         ]
         return (
             <div>
-                <div className='flex gap-2 justify-start items-center flex-wrap mt-4'>
+                <div className='flex gap-2 justify-start items-center flex-wrap my-4'>
                     {
                         descdata?.map((v: any) => (
                             <div key={v?.title} className='w-[380px] border-b border-b-gray-300 lg:mt-0 mt-2'>
