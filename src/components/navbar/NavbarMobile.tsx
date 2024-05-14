@@ -1,5 +1,6 @@
 import { Menu, MenuButton, MenuItem, MenuItems, Transition } from '@headlessui/react';
 import { BookIcon, Building2Icon, ChevronDownCircle, DoorOpenIcon, HomeIcon, MenuIcon, NewspaperIcon, PencilIcon, UserCircle, UserIcon, Users2Icon, Wallet2Icon } from 'lucide-react'
+import Image from 'next/image';
 import { useRouter } from 'next/router'
 import React, { ReactNode } from 'react'
 
@@ -13,53 +14,44 @@ export default function NavbarMobile({ children, session }: { children: ReactNod
             icon: <HomeIcon />
         },
         {
-            name: "Pelanggan",
+            name: "Pengguna",
             href: `/main/customer`,
             icon: <UserIcon />
         },
         {
-            name: "Properti",
-            href: `/main/property`,
+            name: "Iklan",
+            href: `/main/ads`,
             icon: <Building2Icon />
         },
         {
-            name: "Booking",
-            href: `/main/booking`,
+            name: "Kategori",
+            href: `/main/category`,
             icon: <BookIcon />
         },
-        {
-            name: "Pembayaran",
-            href: `/main/payment`,
-            icon: <Wallet2Icon />
-        },
+        // {
+        //     name: "Pembayaran",
+        //     href: `/main/payment`,
+        //     icon: <Wallet2Icon />
+        // },
         {
             name: "Laporan",
             href: `/main/report`,
             icon: <NewspaperIcon />
         },
         {
-            name: "Partner",
-            href: `/main/partner`,
+            name: "Akses",
+            href: `/main/user`,
             icon: <Users2Icon />
-        },
-        {
-            name: "Ubah Profil",
-            href: `/main/profile`,
-            icon: <UserCircle />
-        },
-        {
-            name: "Logout",
-            href: `/login`,
-            icon: <DoorOpenIcon className='text-red-500' />
         },
     ]
     return (
         <div className='overflow-hidden'>
             {/* Topbar */}
-            <div className='bg-blue-500 w-full h-14 flex items-center px-2'>
+            <div className='bg-green-600 w-full h-14 flex items-center px-2'>
                 <Menu>
-                    <MenuButton className={'flex gap-2 items-center justify-end w-full'}>
-                        <p className='text-white text-xl absolute top-3 left-0 right-0'>CAKAROOMS</p>
+                    <MenuButton className={'flex gap-2 items-center justify-between w-full'}>
+                        <Image alt='logo' src={'/images/tokotitoh.png'} layout='relative' width={300} height={300} className='w-10 h-10' />
+                        <p className='text-white text-xl'>TOKOTITOH</p>
                         <MenuIcon color='white' className='w-7' />
                     </MenuButton>
                     <Transition
@@ -80,7 +72,7 @@ export default function NavbarMobile({ children, session }: { children: ReactNod
                                         <button
                                             type='button'
                                             className={router?.pathname?.includes(v?.href) ?
-                                                "group flex w-full items-center gap-2 rounded-lg py-1.5 px-3 bg-blue-500 text-white" :
+                                                "group flex w-full items-center gap-2 rounded-lg py-1.5 px-3 bg-green-600 text-white" :
                                                 `group flex w-full items-center gap-2 rounded-lg py-1.5 px-3 bg-white ${v?.name == 'Logout' ? "text-red-500" : "text-black"}`
                                             }
                                             onClick={() => {
