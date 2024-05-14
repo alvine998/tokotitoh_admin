@@ -87,7 +87,7 @@ export default function NavbarDesktop({ children, session }: { children: ReactNo
             <div className='flex'>
                 {/* Sidebar */}
                 <div className='bg-blue-500 w-1/6 h-[100vh] absolute z-10 top-0 left-0 pt-2'>
-                    <h2 className='text-white text-2xl text-center'>CAKAROOMS</h2>
+                    <h2 className='text-white text-2xl text-center'>TOKOTITOH</h2>
                     <div className='flex flex-col mt-5'>
                         {
                             navs?.map((v: any) => (
