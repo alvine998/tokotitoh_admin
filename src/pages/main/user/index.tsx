@@ -11,6 +11,7 @@ const data: any = [
         name: "alfa",
         phone: "089975756474",
         email: "alfa@gmail.com",
+        role: "super_admin",
         status: "1"
     }
 ]
@@ -37,6 +38,11 @@ export default function User() {
             name: "Email",
             sortable: true,
             selector: (row: any) => row?.email || "-"
+        },
+        {
+            name: "Peran",
+            sortable: true,
+            selector: (row: any) => row?.role == 'super_admin' ? "SUPER ADMIN" : "ADMIN"
         },
         {
             name: "Status",
@@ -98,6 +104,19 @@ export default function User() {
                             <Input label='No Telepon' placeholder='Masukkan No Telepon' name='phone' type='number' defaultValue={modal?.data?.phone || ""} required />
                             <Input label='Email' placeholder='Masukkan Email' name='email' type='email' defaultValue={modal?.data?.email || ""} />
                             <Input label='Password' placeholder='Masukkan Password' name='password' type='password' defaultValue={""} required={modal.key == 'create'} />
+                            <div className='w-full my-2'>
+                                <label className='text-gray-500' htmlFor="x">Peran</label>
+                                <div className='flex gap-5'>
+                                    <div className='flex gap-2'>
+                                        <input type='radio' name='role' value={'super_admin'} defaultChecked={modal?.data?.role == 'super_admin'} />
+                                        <span>Super Admin</span>
+                                    </div>
+                                    <div className='flex gap-2'>
+                                        <input type='radio' name='role' value={'admin'} defaultChecked={modal?.data?.role == 'admin'} />
+                                        <span>Admin</span>
+                                    </div>
+                                </div>
+                            </div>
                             {
                                 modal.key == 'update' ?
                                     <div>
