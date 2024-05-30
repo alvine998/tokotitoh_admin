@@ -1,5 +1,5 @@
 import { Menu, MenuButton, MenuItem, MenuItems, Transition } from '@headlessui/react';
-import { BookIcon, Building2Icon, ChevronDownCircle, DoorOpenIcon, HomeIcon, MenuIcon, NewspaperIcon, PencilIcon, UserCircle, UserIcon, Users2Icon, Wallet2Icon } from 'lucide-react'
+import { BookIcon, Building2Icon, ChevronDownCircle, DoorOpenIcon, HomeIcon, MenuIcon, NewspaperIcon, PencilIcon, UserCircle, UserCircle2Icon, UserIcon, Users2Icon, Wallet2Icon } from 'lucide-react'
 import Image from 'next/image';
 import { useRouter } from 'next/router'
 import React, { ReactNode } from 'react'
@@ -42,6 +42,11 @@ export default function NavbarMobile({ children, session }: { children: ReactNod
             name: "Akses",
             href: `/main/user`,
             icon: <Users2Icon />
+        },
+        {
+            name: "Mitra",
+            href: `/main/partner`,
+            icon: <UserCircle2Icon />
         },
     ]
     return (

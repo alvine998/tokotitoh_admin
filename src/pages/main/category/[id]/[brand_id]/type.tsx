@@ -2,30 +2,42 @@ import Button from '@/components/Button'
 import Input from '@/components/Input'
 import Modal, { useModal } from '@/components/Modal'
 import { CustomTableStyle } from '@/components/table/CustomTableStyle'
+import BrandTabs from '@/components/tabs/BrandTabs'
 import PropertyTabs from '@/components/tabs/PropertyTabs'
-import { EyeIcon, PencilIcon, PlusIcon, SaveAllIcon, Trash2Icon, TrashIcon } from 'lucide-react'
+import { CONFIG } from '@/config'
+import { storage } from '@/config/firebase'
+import axios from 'axios'
+import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
+import { CheckIcon, EyeIcon, PencilIcon, PlusIcon, SaveAllIcon, Trash2Icon, TrashIcon } from 'lucide-react'
+import Image from 'next/image'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import DataTable from 'react-data-table-component'
 import ReactSelect from 'react-select'
-
-const data: any = [
-    {
-        id: 1,
-        brand_name: "Toyota",
-        name: "Altis G"
-    }
-]
+import Swal from 'sweetalert2'
 
 export async function getServerSideProps(context: any) {
     try {
-        const { page, limit } = context.query;
-        const { id } = context.params;
-        // const result = await axios.get(CONFIG.BASE_URL_API.v1 + `/feature?page=${page || 1}&limit=${limit || 10}`)
+        const { page, size, search } = context.query;
+        const { brand_id, id } = context.params;
+        const result = await axios.get(CONFIG.base_url_api + `/types?brand_id=${brand_id}&page=${page || 1}&size=${size || 10}&search=${search || ""}`, {
+            headers: {
+                "bearer-token": "tokotitohapi",
+                "x-partner-code": "id.marketplace.tokotitoh"
+            }
+        })
+        const detail = await axios.get(CONFIG.base_url_api + `/brands?id=${brand_id}`, {
+            headers: {
+                "bearer-token": "tokotitohapi",
+                "x-partner-code": "id.marketplace.tokotitoh"
+            }
+        })
         return {
             props: {
-                // table: result?.data
-                id
+                table: result?.data,
+                detail: detail?.data?.items?.rows[0],
+                id,
+                brand_id
             }
         }
     } catch (error) {
@@ -33,7 +45,7 @@ export async function getServerSideProps(context: any) {
     }
 }
 
-export default function PropertyRoomType({ id }: any) {
+export default function PropertyRoom({ id, detail, table, brand_id }: any) {
     const router = useRouter();
     const [show, setShow] = useState<boolean>(false)
     const [modal, setModal] = useState<useModal>()
@@ -45,14 +57,14 @@ export default function PropertyRoomType({ id }: any) {
 
     const Column: any = [
         {
+            name: "Nama",
+            sortable: true,
+            selector: (row: any) => row?.name
+        },
+        {
             name: "Brand",
             sortable: true,
             selector: (row: any) => row?.brand_name
-        },
-        {
-            name: "Tipe",
-            sortable: true,
-            selector: (row: any) => row?.name
         },
         {
             name: "Aksi",
@@ -71,19 +83,76 @@ export default function PropertyRoomType({ id }: any) {
         },
     ]
 
-    const types = [
-        { value: "homestay", label: "Homestay" },
-        { value: "hotel", label: "Hotel" },
-        { value: "villa", label: "Villa" }
-    ]
-    return (
-        <PropertyTabs id={id}>
-            <h2 className='text-2xl font-semibold'>Tipe</h2>
+    const [filter, setFilter] = useState<any>(router.query)
+    useEffect(() => {
+        const queryFilter = new URLSearchParams(filter).toString();
+        router.push(`?${queryFilter}`)
+    }, [filter])
 
+    const onSubmit = async (e: any) => {
+        e?.preventDefault();
+        const formData = Object.fromEntries(new FormData(e.target))
+        try {
+            const payload = {
+                id: formData?.id,
+                brand_id: brand_id,
+                ...formData
+            }
+            if (payload?.id) {
+                const result = await axios.patch(CONFIG.base_url_api + `/type`, payload, {
+                    headers: {
+                        "bearer-token": "tokotitohapi",
+                        "x-partner-code": "id.marketplace.tokotitoh"
+                    }
+                })
+            } else {
+                const result = await axios.post(CONFIG.base_url_api + `/type`, payload, {
+                    headers: {
+                        "bearer-token": "tokotitohapi",
+                        "x-partner-code": "id.marketplace.tokotitoh"
+                    }
+                })
+            }
+            Swal.fire({
+                icon: "success",
+                text: "Data Berhasil Disimpan"
+            })
+            setModal({ ...modal, open: false })
+            router.push(`/main/category/${id}/${brand_id}/type`)
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    const onRemove = async (e: any) => {
+        try {
+            e?.preventDefault();
+            const formData = Object.fromEntries(new FormData(e.target))
+            const result = await axios.delete(CONFIG.base_url_api + `/type?id=${formData?.id}`, {
+                headers: {
+                    "bearer-token": "tokotitohapi",
+                    "x-partner-code": "id.marketplace.tokotitoh"
+                }
+            })
+            Swal.fire({
+                icon: "success",
+                text: "Data Berhasil Dihapus"
+            })
+            setModal({ ...modal, open: false })
+            router.push(`/main/category/${id}/${brand_id}/type`)
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
+
+    return (
+        <BrandTabs id={id} detail={detail}>
             <div className='mt-5'>
                 <div className='flex lg:flex-row flex-col justify-between items-center'>
                     <div className='lg:w-auto w-full'>
-                        <Input label='' type='search' placeholder='Cari disini...' />
+                        <Input label='' type='search' placeholder='Cari disini...' defaultValue={filter?.search} onChange={(e) => {
+                            setFilter({ ...filter, Search: e.target.value })
+                        }} />
                     </div>
                     <div className='lg:w-auto w-full'>
                         <Button type='button' color='info' className={'flex gap-2 px-2 items-center lg:justify-start justify-center'} onClick={() => {
@@ -98,29 +167,29 @@ export default function PropertyRoomType({ id }: any) {
                     {
                         show &&
                         <DataTable
+                            pagination
+                            onChangePage={(pageData) => {
+                                setFilter({ ...filter, page: pageData })
+                            }}
+                            onChangeRowsPerPage={(currentRow, currentPage) => {
+                                setFilter({ ...filter, page: currentPage, size: currentRow })
+                            }}
+                            responsive={true}
+                            paginationTotalRows={table?.items?.count}
+                            paginationDefaultPage={1}
+                            paginationServer={true}
+                            striped
                             columns={Column}
-                            data={data}
+                            data={table?.items?.rows}
                             customStyles={CustomTableStyle}
                         />
                     }
                 </div>
-
-
                 {
                     modal?.key == "create" || modal?.key == "update" ? <Modal open={modal.open} setOpen={() => setModal({ ...modal, open: false })}>
                         <h2 className='text-xl font-semibold text-center'>{modal.key == 'create' ? "Tambah" : "Ubah"} Tipe</h2>
-                        <form>
+                        <form onSubmit={onSubmit}>
                             <Input label='Nama Tipe' placeholder='Masukkan Nama Tipe' name='name' defaultValue={modal?.data?.name || ""} required />
-                            <div className='w-full my-2'>
-                                <label className='text-gray-500' htmlFor="x">Brand</label>
-                                <ReactSelect
-                                    options={types}
-                                    defaultValue={{ value: modal?.data?.type || "homestay", label: types?.find((v: any) => modal?.data?.type == v?.value)?.label || "Homestay" }}
-                                    required
-                                    name='type'
-                                    id='x'
-                                />
-                            </div>
                             <input type="hidden" name="id" value={modal?.data?.id || ""} />
                             <div className='flex lg:gap-2 gap-0 lg:flex-row flex-col-reverse justify-end'>
                                 <div>
@@ -146,7 +215,7 @@ export default function PropertyRoomType({ id }: any) {
                 {
                     modal?.key == "delete" ? <Modal open={modal.open} setOpen={() => setModal({ ...modal, open: false })}>
                         <h2 className='text-xl font-semibold text-center'>Hapus Tipe</h2>
-                        <form>
+                        <form onSubmit={onRemove}>
                             <input type="hidden" name="id" value={modal?.data?.id} />
                             <p className='text-center my-2'>Apakah anda yakin ingin menghapus data {modal?.data?.name}?</p>
                             <div className='flex lg:gap-2 gap-0 lg:flex-row flex-col-reverse justify-end'>
@@ -171,6 +240,6 @@ export default function PropertyRoomType({ id }: any) {
                         : ""
                 }
             </div>
-        </PropertyTabs>
+        </BrandTabs>
     )
 }

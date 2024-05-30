@@ -3,35 +3,35 @@ import Input from '@/components/Input'
 import Modal, { useModal } from '@/components/Modal'
 import { CustomTableStyle } from '@/components/table/CustomTableStyle'
 import PropertyTabs from '@/components/tabs/PropertyTabs'
+import { CONFIG } from '@/config'
+import axios from 'axios'
 import { EyeIcon, PencilIcon, PlusIcon, SaveAllIcon, Trash2Icon, TrashIcon } from 'lucide-react'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import DataTable from 'react-data-table-component'
 import ReactSelect from 'react-select'
-
-const data: any = [
-    {
-        id: 1,
-        name: "Mobil Dijual",
-    },
-    {
-        id: 2,
-        name: "Mobil Disewakan",
-    },
-    {
-        id: 3,
-        name: "Sparepart",
-    },
-]
+import Swal from 'sweetalert2'
 
 export async function getServerSideProps(context: any) {
     try {
-        const { page, limit } = context.query;
+        const { page, size, search } = context.query;
         const { id } = context.params;
-        // const result = await axios.get(CONFIG.BASE_URL_API.v1 + `/feature?page=${page || 1}&limit=${limit || 10}`)
+        const result = await axios.get(CONFIG.base_url_api + `/subcategories?category_id=${id}&page=${page || 1}&size=${size || 10}&search=${search || ""}`, {
+            headers: {
+                "bearer-token": "tokotitohapi",
+                "x-partner-code": "id.marketplace.tokotitoh"
+            }
+        })
+        const detail = await axios.get(CONFIG.base_url_api + `/categories?id=${id}`, {
+            headers: {
+                "bearer-token": "tokotitohapi",
+                "x-partner-code": "id.marketplace.tokotitoh"
+            }
+        })
         return {
             props: {
-                // table: result?.data
+                table: result?.data,
+                detail: detail?.data?.items?.rows[0],
                 id
             }
         }
@@ -40,10 +40,11 @@ export async function getServerSideProps(context: any) {
     }
 }
 
-export default function PropertyRoomType({ id }: any) {
+export default function PropertyRoomType({ id, table, detail }: any) {
     const router = useRouter();
     const [show, setShow] = useState<boolean>(false)
     const [modal, setModal] = useState<useModal>()
+    const [filter, setFilter] = useState<any>(router.query);
     useEffect(() => {
         if (typeof window !== 'undefined') {
             setShow(true)
@@ -77,14 +78,78 @@ export default function PropertyRoomType({ id }: any) {
         { value: "hotel", label: "Hotel" },
         { value: "villa", label: "Villa" }
     ]
+
+    useEffect(() => {
+        const queryFilter = new URLSearchParams(filter).toString();
+        router.push(`?${queryFilter}`)
+    }, [filter])
+
+    const onSubmit = async (e: any) => {
+        e?.preventDefault();
+        const formData = Object.fromEntries(new FormData(e.target))
+        try {
+            const payload = {
+                id: formData?.id,
+                ...formData,
+                category_id: id
+            }
+            if (payload?.id) {
+                const result = await axios.patch(CONFIG.base_url_api + `/subcategory`, payload, {
+                    headers: {
+                        "bearer-token": "tokotitohapi",
+                        "x-partner-code": "id.marketplace.tokotitoh"
+                    }
+                })
+            } else {
+                const result = await axios.post(CONFIG.base_url_api + `/subcategory`, payload, {
+                    headers: {
+                        "bearer-token": "tokotitohapi",
+                        "x-partner-code": "id.marketplace.tokotitoh"
+                    }
+                })
+            }
+            Swal.fire({
+                icon: "success",
+                text: "Data Berhasil Disimpan"
+            })
+            setModal({ ...modal, open: false })
+            router.push(`/main/category/${id}/subcategory`)
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    const onRemove = async (e: any) => {
+        try {
+            e?.preventDefault();
+            const formData = Object.fromEntries(new FormData(e.target))
+            const result = await axios.delete(CONFIG.base_url_api + `/subcategory?id=${formData?.id}`, {
+                headers: {
+                    "bearer-token": "tokotitohapi",
+                    "x-partner-code": "id.marketplace.tokotitoh"
+                }
+            })
+            Swal.fire({
+                icon: "success",
+                text: "Data Berhasil Dihapus"
+            })
+            setModal({ ...modal, open: false })
+            router.push(`/main/category/${id}/subcategory`)
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
+
     return (
-        <PropertyTabs id={id}>
+        <PropertyTabs id={id} detail={detail}>
             <h2 className='text-2xl font-semibold'>Sub Kategori</h2>
 
             <div className='mt-5'>
                 <div className='flex lg:flex-row flex-col justify-between items-center'>
                     <div className='lg:w-auto w-full'>
-                        <Input label='' type='search' placeholder='Cari disini...' />
+                        <Input label='' type='search' defaultValue={filter?.search} placeholder='Cari disini...' onChange={(e)=>{
+                           setFilter({...filter, search: e.target.value})
+                        }} />
                     </div>
                     <div className='lg:w-auto w-full'>
                         <Button type='button' color='info' className={'flex gap-2 px-2 items-center lg:justify-start justify-center'} onClick={() => {
@@ -99,8 +164,20 @@ export default function PropertyRoomType({ id }: any) {
                     {
                         show &&
                         <DataTable
+                            pagination
+                            onChangePage={(pageData) => {
+                                setFilter({ ...filter, page: pageData })
+                            }}
+                            onChangeRowsPerPage={(currentRow, currentPage) => {
+                                setFilter({ ...filter, page: currentPage, size: currentRow })
+                            }}
+                            responsive={true}
+                            paginationTotalRows={table?.items?.count}
+                            paginationDefaultPage={1}
+                            paginationServer={true}
+                            striped
                             columns={Column}
-                            data={data}
+                            data={table?.items?.rows}
                             customStyles={CustomTableStyle}
                         />
                     }
@@ -109,38 +186,8 @@ export default function PropertyRoomType({ id }: any) {
                 {
                     modal?.key == "create" || modal?.key == "update" ? <Modal open={modal.open} setOpen={() => setModal({ ...modal, open: false })}>
                         <h2 className='text-xl font-semibold text-center'>{modal.key == 'create' ? "Tambah" : "Ubah"} Sub Kategori</h2>
-                        <form>
+                        <form onSubmit={onSubmit}>
                             <Input label='Nama Sub Kategori' placeholder='Masukkan Nama Sub Kategori' name='name' defaultValue={modal?.data?.name || ""} required />
-                            {/* <div className='w-full my-2'>
-                                <label className='text-gray-500' htmlFor="x">Jenis Properti</label>
-                                <ReactSelect
-                                    options={types}
-                                    defaultValue={{ value: modal?.data?.type || "homestay", label: types?.find((v: any) => modal?.data?.type == v?.value)?.label || "Homestay" }}
-                                    required
-                                    name='type'
-                                    id='x'
-                                />
-                            </div>
-                            <Input label='Nama PIC' placeholder='Masukkan Nama PIC' name='pic_name' type='email' defaultValue={modal?.data?.pic_name || ""} />
-                            <Input label='No Telepon PIC' placeholder='Masukkan No Telepon PIC' name='pic_phone' type='number' defaultValue={modal?.data?.pic_phone || ""} required />
-                            <Input label='Email PIC' placeholder='Masukkan Email PIC' name='pic_email' type='email' defaultValue={modal?.data?.pic_email || ""} />
-                            {
-                                modal?.key == "update" ?
-                                    <div className='w-full my-2'>
-                                        <label className='text-gray-500' htmlFor="x">Status</label>
-                                        <div className='flex gap-5'>
-                                            <div className='flex gap-2'>
-                                                <input type='radio' name='status' value={'1'} defaultChecked={modal?.data?.status == 1} />
-                                                <span>Aktif</span>
-                                            </div>
-                                            <div className='flex gap-2'>
-                                                <input type='radio' name='status' value={'0'} defaultChecked={modal?.data?.status == 0} />
-                                                <span>Non Aktif</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    : ""
-                            } */}
                             <input type="hidden" name="id" value={modal?.data?.id || ""} />
                             <div className='flex lg:gap-2 gap-0 lg:flex-row flex-col-reverse justify-end'>
                                 <div>
@@ -166,7 +213,7 @@ export default function PropertyRoomType({ id }: any) {
                 {
                     modal?.key == "delete" ? <Modal open={modal.open} setOpen={() => setModal({ ...modal, open: false })}>
                         <h2 className='text-xl font-semibold text-center'>Hapus Sub Kategori</h2>
-                        <form>
+                        <form onSubmit={onRemove}>
                             <input type="hidden" name="id" value={modal?.data?.id} />
                             <p className='text-center my-2'>Apakah anda yakin ingin menghapus data {modal?.data?.name}?</p>
                             <div className='flex lg:gap-2 gap-0 lg:flex-row flex-col-reverse justify-end'>

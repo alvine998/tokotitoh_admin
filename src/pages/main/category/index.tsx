@@ -2,33 +2,103 @@ import Button from '@/components/Button'
 import Input from '@/components/Input'
 import Modal, { useModal } from '@/components/Modal'
 import { CustomTableStyle } from '@/components/table/CustomTableStyle'
-import { EyeIcon, PencilIcon, PlusIcon, SaveAllIcon, Trash2Icon, TrashIcon } from 'lucide-react'
+import { CONFIG } from '@/config'
+import { storage } from '@/config/firebase'
+import axios from 'axios'
+import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
+import { EyeIcon, PencilIcon, PlusIcon, SaveAllIcon, Search, Trash2Icon, TrashIcon } from 'lucide-react'
+import Image from 'next/image'
+import { redirect } from 'next/navigation'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import DataTable from 'react-data-table-component'
 import ReactSelect from 'react-select'
+import Swal from 'sweetalert2'
 
-const data: any = [
-    {
-        id: 1,
-        name: "Mobil"
+export async function getServerSideProps(context: any) {
+    try {
+        const { page, size } = context.query;
+        const result = await axios.get(CONFIG.base_url_api + `/categories?page=${page || 0}&size=${size || 10}`, {
+            headers: {
+                "bearer-token": "tokotitohapi",
+                "x-partner-code": "id.marketplace.tokotitoh"
+            }
+        })
+        return {
+            props: {
+                table: result?.data
+            }
+        }
+    } catch (error: any) {
+        console.log(error);
+        if (error?.response?.status == 401) {
+            return {
+                redirect: {
+                    destination: '/',
+                    permanent: false,
+                }
+            }
+        }
+        return {
+            props: {
+                error: error?.response?.data?.message,
+            }
+        }
     }
-]
+}
 
-export default function Property() {
+export default function Category({ table }: any) {
     const router = useRouter();
     const [show, setShow] = useState<boolean>(false)
     const [modal, setModal] = useState<useModal>()
+    const [filter, setFilter] = useState<any>(router.query)
+    const [image, setImage] = useState<any>();
+    const [progress, setProgress] = useState<any>();
+
+    const handleImage = async (e: any) => {
+        if (e.target.files) {
+            const file = e.target.files[0]
+            if (file?.size <= 500000) {
+                const storageRef = ref(storage, `images/category/${file?.name}`);
+                const uploadTask = uploadBytesResumable(storageRef, file);
+                uploadTask.on('state_changed', (snapshot) => {
+                    const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+                    setProgress(progress);
+                }, (error) => {
+                    console.log(error);
+                }, () => {
+                    getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                        setImage(downloadURL);
+                    })
+                })
+            } else {
+                return Swal.fire({
+                    icon: "error",
+                    text: "Ukuran Gambar Tidak Boleh Lebih Dari 500Kb"
+                })
+            }
+        }
+    }
+
     useEffect(() => {
         if (typeof window !== 'undefined') {
             setShow(true)
         }
     }, [])
+    useEffect(() => {
+        const queryFilter = new URLSearchParams(filter).toString();
+        router.push(`?${queryFilter}`)
+    }, [filter])
     const Column: any = [
         {
             name: "Nama",
             sortable: true,
             selector: (row: any) => row?.name
+        },
+        {
+            name: "Ikon",
+            sortable: true,
+            selector: (row: any) => row?.icon ? <Image alt='icon' src={row?.icon} width={300} height={300} layout='relative' className='w-[100px] h-[100px] m-2' /> : "-"
         },
         {
             name: "Aksi",
@@ -40,6 +110,7 @@ export default function Property() {
                 </Button>
                 <Button title='Edit' color='primary' type='button' onClick={() => {
                     setModal({ ...modal, open: true, data: row, key: "update" })
+                    setImage(row?.icon)
                 }}>
                     <PencilIcon className='text-white w-5 h-5' />
                 </Button>
@@ -51,6 +122,70 @@ export default function Property() {
             </div>
         },
     ]
+
+    const onSubmit = async (e: any) => {
+        e?.preventDefault();
+        const formData = Object.fromEntries(new FormData(e.target))
+        try {
+            if (!image) {
+                return Swal.fire({
+                    icon: "error",
+                    text: "Icon Wajib Diisi"
+                })
+            }
+            const payload = {
+                id: formData?.id,
+                icon: image,
+                ...formData
+            }
+            if (payload?.id) {
+                const result = await axios.patch(CONFIG.base_url_api + `/category`, payload, {
+                    headers: {
+                        "bearer-token": "tokotitohapi",
+                        "x-partner-code": "id.marketplace.tokotitoh"
+                    }
+                })
+            } else {
+                const result = await axios.post(CONFIG.base_url_api + `/category`, payload, {
+                    headers: {
+                        "bearer-token": "tokotitohapi",
+                        "x-partner-code": "id.marketplace.tokotitoh"
+                    }
+                })
+            }
+            Swal.fire({
+                icon: "success",
+                text: "Data Berhasil Disimpan"
+            })
+            setImage(null)
+            setProgress(null)
+            setModal({ ...modal, open: false })
+            router.push('')
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    const onRemove = async (e: any) => {
+        try {
+            e?.preventDefault();
+            const formData = Object.fromEntries(new FormData(e.target))
+            const result = await axios.delete(CONFIG.base_url_api + `/category?id=${formData?.id}`, {
+                headers: {
+                    "bearer-token": "tokotitohapi",
+                    "x-partner-code": "id.marketplace.tokotitoh"
+                }
+            })
+            Swal.fire({
+                icon: "success",
+                text: "Data Berhasil Dihapus"
+            })
+            setModal({ ...modal, open: false })
+            router.push('')
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
     return (
         <div>
             <h2 className='text-2xl font-semibold'>Kategori</h2>
@@ -58,7 +193,9 @@ export default function Property() {
             <div className='mt-5'>
                 <div className='flex lg:flex-row flex-col justify-between items-center'>
                     <div className='lg:w-auto w-full'>
-                        <Input label='' type='search' placeholder='Cari disini...' />
+                        <Input label='' type='search' placeholder='Cari disini...' defaultValue={filter?.search} onChange={(e) => {
+                            setFilter({...filter, Search: e.target.value})
+                        }} />
                     </div>
                     <div className='lg:w-auto w-full'>
                         <Button type='button' color='info' className={'flex gap-2 px-2 items-center lg:justify-start justify-center'} onClick={() => {
@@ -73,8 +210,20 @@ export default function Property() {
                     {
                         show &&
                         <DataTable
+                            pagination
+                            onChangePage={(pageData) => {
+                                setFilter({ ...filter, page: pageData })
+                            }}
+                            onChangeRowsPerPage={(currentRow, currentPage) => {
+                                setFilter({ ...filter, page: currentPage, size: currentRow })
+                            }}
+                            responsive={true}
+                            paginationTotalRows={table?.items?.count}
+                            paginationDefaultPage={1}
+                            paginationServer={true}
+                            striped
                             columns={Column}
-                            data={data}
+                            data={table?.items?.rows}
                             customStyles={CustomTableStyle}
                         />
                     }
@@ -83,8 +232,15 @@ export default function Property() {
                 {
                     modal?.key == "create" || modal?.key == "update" ? <Modal open={modal.open} setOpen={() => setModal({ ...modal, open: false })}>
                         <h2 className='text-xl font-semibold text-center'>{modal.key == 'create' ? "Tambah" : "Ubah"} Kategori</h2>
-                        <form>
+                        <form onSubmit={onSubmit}>
                             <Input label='Nama Kategori' placeholder='Masukkan Nama Kategori' name='name' defaultValue={modal?.data?.name || ""} required />
+                            <Input label='Icon' placeholder='Masukkan icon' type='file' onChange={handleImage} accept='image/*' />
+                            {
+                                progress && <p>Progress: {progress}%</p>
+                            }
+                            {
+                                image && <a href={image} target='_blank' className='text-blue-500'>Lihat</a>
+                            }
                             <input type="hidden" name="id" value={modal?.data?.id || ""} />
                             <div className='flex lg:gap-2 gap-0 lg:flex-row flex-col-reverse justify-end'>
                                 <div>
@@ -110,7 +266,7 @@ export default function Property() {
                 {
                     modal?.key == "delete" ? <Modal open={modal.open} setOpen={() => setModal({ ...modal, open: false })}>
                         <h2 className='text-xl font-semibold text-center'>Hapus Kategori</h2>
-                        <form>
+                        <form onSubmit={onRemove}>
                             <input type="hidden" name="id" value={modal?.data?.id} />
                             <p className='text-center my-2'>Apakah anda yakin ingin menghapus data {modal?.data?.name}?</p>
                             <div className='flex lg:gap-2 gap-0 lg:flex-row flex-col-reverse justify-end'>

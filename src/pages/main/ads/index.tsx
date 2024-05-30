@@ -40,6 +40,39 @@ const data: any = [
         color: "Hitam",
         ownership: "individual",
         status: 1
+    },
+    {
+        id: 2,
+        user_id: 1,
+        user_name: "alfa",
+        title: "Toyota Avanza 2012 Q",
+        brand_id: 1,
+        brand_name: "Toyota",
+        type_id: 1,
+        type_name: "Avanza",
+        category_id: 1,
+        category_name: "Mobil",
+        subcategory_id: 1,
+        subcategory_name: "Mobil Dijual",
+        price: 87000000,
+        description: "-",
+        province_id: 1,
+        province_name: "Jakarta",
+        city_id: 1,
+        city_name: "Jakarta Selatan",
+        district_id: 1,
+        district_name: "Menteng",
+        images: [
+            'image1.jpg',
+            'image2.jpg'
+        ],
+        km: 90000,
+        transmission: 'AT',
+        year: 2012,
+        plat_no: 'B-2345-UKC',
+        color: "Hitam",
+        ownership: "individual",
+        status: 1
     }
 ]
 
@@ -140,7 +173,7 @@ export default function User() {
                             columns={CustomerColumn}
                             data={data}
                             // selectableRows
-                            expandableRows
+                            expandableRows={true}
                             expandableRowsComponent={ComponentExpand}
                             customStyles={CustomTableStyle}
                         />

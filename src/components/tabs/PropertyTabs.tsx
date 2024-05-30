@@ -3,7 +3,7 @@ import React, { ReactNode } from 'react'
 import Button from '../Button';
 import { ChevronLeft } from 'lucide-react';
 
-export default function PropertyTabs({ children, id }: { children: ReactNode, id: any }) {
+export default function PropertyTabs({ children, id, detail }: { children: ReactNode, id: any, detail: any }) {
     const router = useRouter();
     console.log(router.pathname, 'path');
     const tabs = [
@@ -16,12 +16,7 @@ export default function PropertyTabs({ children, id }: { children: ReactNode, id
             name: "Brand",
             href: `/main/category/${id}/brand`,
             active: 'brand'
-        },
-        {
-            name: "Tipe",
-            href: `/main/category/${id}/type`,
-            active: 'type'
-        },
+        }
     ]
 
     // const descdata = [
@@ -40,7 +35,7 @@ export default function PropertyTabs({ children, id }: { children: ReactNode, id
                 </div>
             </div>
             <div className='bg-white shadow-lg rounded w-full p-4 h-full'>
-                <h5 className='font-semibold text-xl'>Detail Kategori Mobil</h5>
+                <h5 className='font-semibold text-xl'>Detail Kategori {detail?.name}</h5>
                 {/* <div className='flex gap-2 justify-between items-center flex-wrap mt-4'>
                     {
                         descdata?.map((v: any) => (
