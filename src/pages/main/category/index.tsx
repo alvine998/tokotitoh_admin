@@ -96,6 +96,11 @@ export default function Category({ table }: any) {
             selector: (row: any) => row?.name
         },
         {
+            name: "Urutan Ke",
+            sortable: true,
+            selector: (row: any) => row?.seq
+        },
+        {
             name: "Ikon",
             sortable: true,
             selector: (row: any) => row?.icon ? <Image alt='icon' src={row?.icon} width={300} height={300} layout='relative' className='w-[100px] h-[100px] m-2' /> : "-"
@@ -194,7 +199,7 @@ export default function Category({ table }: any) {
                 <div className='flex lg:flex-row flex-col justify-between items-center'>
                     <div className='lg:w-auto w-full'>
                         <Input label='' type='search' placeholder='Cari disini...' defaultValue={filter?.search} onChange={(e) => {
-                            setFilter({...filter, search: e.target.value})
+                            setFilter({ ...filter, search: e.target.value })
                         }} />
                     </div>
                     <div className='lg:w-auto w-full'>
@@ -234,6 +239,7 @@ export default function Category({ table }: any) {
                         <h2 className='text-xl font-semibold text-center'>{modal.key == 'create' ? "Tambah" : "Ubah"} Kategori</h2>
                         <form onSubmit={onSubmit}>
                             <Input label='Nama Kategori' placeholder='Masukkan Nama Kategori' name='name' defaultValue={modal?.data?.name || ""} required />
+                            <Input label='Urutan Tampil' placeholder='Masukkan Urutan Tampil' name='seq' defaultValue={modal?.data?.seq || ""} required />
                             <Input label='Icon' placeholder='Masukkan icon' type='file' onChange={handleImage} accept='image/*' />
                             {
                                 progress && <p>Progress: {progress}%</p>
