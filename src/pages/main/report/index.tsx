@@ -3,26 +3,23 @@ import Input from '@/components/Input'
 import Modal, { useModal } from '@/components/Modal'
 import { CustomTableStyle } from '@/components/table/CustomTableStyle'
 import { CONFIG } from '@/config'
+import { storage } from '@/config/firebase'
+import { Textarea } from '@headlessui/react'
 import axios from 'axios'
-import { PencilIcon, PlusIcon, SaveAllIcon, Trash2Icon, TrashIcon } from 'lucide-react'
+import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
+import { EyeIcon, PencilIcon, PlusIcon, ReplyIcon, SaveAllIcon, Search, Trash2Icon, TrashIcon } from 'lucide-react'
+import Image from 'next/image'
+import { redirect } from 'next/navigation'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import DataTable from 'react-data-table-component'
+import ReactSelect from 'react-select'
 import Swal from 'sweetalert2'
-
-const data: any = [
-    {
-        name: "alfa",
-        phone: "089975756474",
-        email: "alfa@gmail.com",
-        status: "1"
-    }
-]
 
 export async function getServerSideProps(context: any) {
     try {
-        const { page, size } = context.query;
-        const result = await axios.get(CONFIG.base_url_api + `/users?isCustomer=1&page=${page || 0}&size=${size || 10}`, {
+        const { page, size, search } = context.query;
+        const result = await axios.get(CONFIG.base_url_api + `/reports?page=${page || 0}&size=${size || 10}&search=${search || ""}`, {
             headers: {
                 "bearer-token": "tokotitohapi",
                 "x-partner-code": "id.marketplace.tokotitoh"
@@ -51,11 +48,12 @@ export async function getServerSideProps(context: any) {
     }
 }
 
-export default function Customer({ table }: any) {
+export default function Category({ table }: any) {
     const router = useRouter();
-    const [filter, setFilter] = useState<any>(router.query);
     const [show, setShow] = useState<boolean>(false)
     const [modal, setModal] = useState<useModal>()
+    const [filter, setFilter] = useState<any>(router.query)
+
     useEffect(() => {
         if (typeof window !== 'undefined') {
             setShow(true)
@@ -65,40 +63,40 @@ export default function Customer({ table }: any) {
         const queryFilter = new URLSearchParams(filter).toString();
         router.push(`?${queryFilter}`)
     }, [filter])
-    const CustomerColumn: any = [
+    const Column: any = [
         {
-            name: "Nama",
+            name: "Nama Pengguna",
             sortable: true,
-            selector: (row: any) => row?.name
+            selector: (row: any) => row?.user_name
         },
         {
-            name: "No Telepon",
-            selector: (row: any) => row?.phone
+            name: "Judul Laporan",
+            sortable: true,
+            selector: (row: any) => row?.title
         },
         {
-            name: "Email",
+            name: "Deskripsi",
             sortable: true,
-            selector: (row: any) => row?.email || "-"
+            selector: (row: any) => <button className='text-blue-500' type='button' onClick={() => {
+                setModal({ ...modal, open: true, data: row, key: "desc" })
+            }} >Lihat</button>
         },
         {
             name: "Status",
             sortable: true,
-            selector: (row: any) => row?.status == '1' ? 'Aktif' : 'Non Aktif'
+            selector: (row: any) => row?.status == 1 ? "Sudah Dibalas" : "Menunggu Tanggapan"
         },
         {
             name: "Aksi",
-            right: true,
-            selector: (row: any) => <div className='flex gap-2'>
-                <Button title='Edit' color='primary' onClick={() => {
-                    setModal({ ...modal, open: true, data: row, key: "update" })
-                }}>
-                    <PencilIcon className='text-white w-5 h-5' />
-                </Button>
-                {/* <Button title='Hapus' color='danger' onClick={() => {
-                    setModal({ ...modal, open: true, data: row, key: "delete" })
-                }}>
-                    <TrashIcon className='text-white w-5 h-5' />
-                </Button> */}
+            selector: (row: any) => <div className='flex gap-2 flex-row'>
+                {
+                    row?.status == 0 ?
+                        <Button title='Edit' color='primary' type='button' onClick={() => {
+                            setModal({ ...modal, open: true, data: row, key: "update" })
+                        }}>
+                            <ReplyIcon className='text-white w-5 h-5' />
+                        </Button> : ""
+                }
             </div>
         },
     ]
@@ -112,14 +110,14 @@ export default function Customer({ table }: any) {
                 ...formData
             }
             if (payload?.id) {
-                const result = await axios.patch(CONFIG.base_url_api + `/user`, payload, {
+                const result = await axios.patch(CONFIG.base_url_api + `/report`, payload, {
                     headers: {
                         "bearer-token": "tokotitohapi",
                         "x-partner-code": "id.marketplace.tokotitoh"
                     }
                 })
             } else {
-                const result = await axios.post(CONFIG.base_url_api + `/user`, payload, {
+                const result = await axios.post(CONFIG.base_url_api + `/report`, payload, {
                     headers: {
                         "bearer-token": "tokotitohapi",
                         "x-partner-code": "id.marketplace.tokotitoh"
@@ -138,13 +136,13 @@ export default function Customer({ table }: any) {
     }
     return (
         <div>
-            <h2 className='text-2xl font-semibold'>Pengguna</h2>
+            <h2 className='text-2xl font-semibold'>Laporan</h2>
 
             <div className='mt-5'>
                 <div className='flex lg:flex-row flex-col justify-between items-center'>
                     <div className='lg:w-auto w-full'>
                         <Input label='' type='search' placeholder='Cari disini...' defaultValue={filter?.search} onChange={(e) => {
-                            setFilter({ ...filter, Search: e.target.value })
+                            setFilter({ ...filter, search: e.target.value })
                         }} />
                     </div>
                 </div>
@@ -164,39 +162,23 @@ export default function Customer({ table }: any) {
                             paginationDefaultPage={1}
                             paginationServer={true}
                             striped
-                            columns={CustomerColumn}
+                            columns={Column}
                             data={table?.items?.rows}
                             customStyles={CustomTableStyle}
                         />
                     }
                 </div>
+
                 {
                     modal?.key == "create" || modal?.key == "update" ? <Modal open={modal.open} setOpen={() => setModal({ ...modal, open: false })}>
-                        <h2 className='text-xl font-semibold text-center'>{modal.key == 'create' ? "Tambah" : "Ubah"} Status Pengguna</h2>
+                        <h2 className='text-xl font-semibold text-center'>Balas Laporan</h2>
                         <form onSubmit={onSubmit}>
-                            <input type="hidden" name="id" value={modal?.data?.id} />
-                            {/* <Input label='Nama' placeholder='Masukkan Nama' name='name' defaultValue={modal?.data?.name || ""} required />
-                            <Input label='No Telepon' placeholder='Masukkan No Telepon' name='phone' type='number' defaultValue={modal?.data?.phone || ""} required />
-                            <Input label='Email' placeholder='Masukkan Email' name='email' type='email' defaultValue={modal?.data?.email || ""} /> */}
-                            {
-                                modal.key == 'update' ?
-                                    <div>
-                                        <div className='w-full my-2'>
-                                            <label className='text-gray-500' htmlFor="x">Status</label>
-                                            <div className='flex gap-5'>
-                                                <div className='flex gap-2'>
-                                                    <input type='radio' name='status' value={'1'} defaultChecked={modal?.data?.status == 1} />
-                                                    <span>Aktif</span>
-                                                </div>
-                                                <div className='flex gap-2'>
-                                                    <input type='radio' name='status' value={'0'} defaultChecked={modal?.data?.status == 0} />
-                                                    <span>Non Aktif</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    : ""
-                            }
+                            <Textarea
+                                className="block w-full rounded-md border-0 py-1.5 pl-4 pr-2 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 focus:outline-none sm:text-sm sm:leading-6 my-4"
+                                name='replies'
+                                placeholder='Ketik Disini...'
+                            />
+                            <input type="hidden" name="id" value={modal?.data?.id || ""} />
                             <div className='flex lg:gap-2 gap-0 lg:flex-row flex-col-reverse justify-end'>
                                 <div>
                                     <Button color='white' type='button' onClick={() => {
@@ -205,7 +187,6 @@ export default function Customer({ table }: any) {
                                         Kembali
                                     </Button>
                                 </div>
-
                                 <div>
                                     <Button color='info' className={'flex gap-2 px-2 items-center justify-center'}>
                                         <SaveAllIcon className='w-4 h-4' />
@@ -215,6 +196,22 @@ export default function Customer({ table }: any) {
 
                             </div>
                         </form>
+                    </Modal>
+                        : ""
+                }
+                {
+                    modal?.key == "desc" ? <Modal open={modal.open} setOpen={() => setModal({ ...modal, open: false })}>
+                        <h2 className='text-xl font-semibold text-center'>Deskripsi Laporan</h2>
+                        <p className='my-4'>{modal?.data?.description}</p>
+                        <div className='flex lg:gap-2 gap-0 lg:flex-row flex-col-reverse justify-end'>
+                            <div>
+                                <Button color='white' type='button' onClick={() => {
+                                    setModal({ open: false })
+                                }}>
+                                    Tutup
+                                </Button>
+                            </div>
+                        </div>
                     </Modal>
                         : ""
                 }

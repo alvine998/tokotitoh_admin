@@ -75,7 +75,7 @@ export default function NavbarDesktop({ children, session }: { children: ReactNo
                                 </button>
                             </MenuItem> */}
                             <MenuItem>
-                                <button className="group flex w-full items-center gap-2 rounded-lg py-1.5 px-3 data-[focus]:bg-white text-red-500">
+                                <button type='button' onClick={()=>router.push('/')} className="group flex w-full items-center gap-2 rounded-lg py-1.5 px-3 data-[focus]:bg-white text-red-500">
                                     <DoorOpenIcon className="size-4 text-red-500" />
                                     Logout
                                 </button>
