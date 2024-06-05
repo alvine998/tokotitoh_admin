@@ -5,7 +5,7 @@ import { CustomTableStyle } from '@/components/table/CustomTableStyle'
 import { CONFIG } from '@/config'
 import { toMoney } from '@/utils'
 import axios from 'axios'
-import { CheckIcon, PencilIcon, PlusIcon, SaveAllIcon, Trash2Icon, TrashIcon, XIcon } from 'lucide-react'
+import { CheckIcon, EyeIcon, PencilIcon, PlusIcon, SaveAllIcon, Trash2Icon, TrashIcon, XIcon } from 'lucide-react'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import DataTable, { ExpanderComponentProps } from 'react-data-table-component'
@@ -80,13 +80,17 @@ export default function User({ table }: any) {
         {
             name: "Status",
             sortable: true,
-            selector: (row: any) => row?.status == '1' ? 'Aktif' : 'Non Aktif'
+            selector: (row: any) =>  row?.status == '0' ? "Menunggu" : row?.status == '1' ? 'Aktif' : 'Ditolak'
         },
         {
             name: "Aksi",
-            right: true,
             selector: (row: any) => <div className='flex gap-2'>
-                <Button title='Verifikasi' color='primary' onClick={() => {
+                <Button title='Verifikasi' color='warning' onClick={() => {
+                    router.push(`/main/ads/${row?.id}`)
+                }}>
+                    <EyeIcon className='text-white w-5 h-5' />
+                </Button>
+                {/* <Button title='Verifikasi' color='primary' onClick={() => {
                     setModal({ ...modal, open: true, data: row, key: "approved" })
                 }}>
                     <CheckIcon className='text-white w-5 h-5' />
@@ -95,40 +99,11 @@ export default function User({ table }: any) {
                     setModal({ ...modal, open: true, data: row, key: "rejected" })
                 }}>
                     <XIcon className='text-white w-5 h-5' />
-                </Button>
+                </Button> */}
             </div>
         },
     ]
 
-    const ComponentExpand: React.FC<ExpanderComponentProps<any>> = ({ data }: any) => {
-        const descdata = [
-            { title: "Sub Kategori", value: data?.subcategory_name },
-            { title: "Brand", value: data?.brand_name },
-            { title: "Tipe", value: data?.type_name },
-            { title: "Deskripsi", value: data?.description },
-            { title: "Tahun", value: data?.year },
-            { title: "Transmisi", value: data?.transmission },
-            { title: "Trip KM", value: toMoney(data?.km) },
-            { title: "Plat Nomor", value: data?.plat_no?.replaceAll("_", " ") },
-            { title: "Jenis Kepemilikan", value: data?.ownership },
-            { title: "Warna", value: data?.color },
-            { title: "Lokasi", value: `${data?.district_name}, ${data?.city_name}, ${data?.province_name}` }
-        ]
-        return (
-            <div>
-                <div className='flex gap-2 justify-start items-center flex-wrap my-4'>
-                    {
-                        descdata?.map((v: any) => (
-                            <div key={v?.title} className='w-[380px] border-b border-b-gray-300 lg:mt-0 mt-2'>
-                                <label htmlFor={v?.title} className='font-semibold'>{v?.title}</label>
-                                <p className='text-sm mt-2' id={v?.title}>{v?.value}</p>
-                            </div>
-                        ))
-                    }
-                </div>
-            </div>
-        )
-    }
     return (
         <div>
             <h2 className='text-2xl font-semibold'>Iklan</h2>
@@ -158,45 +133,9 @@ export default function User({ table }: any) {
                             columns={CustomerColumn}
                             data={table?.items?.rows}
                             customStyles={CustomTableStyle}
-                            expandableRows={true}
-                            expandableRowsComponent={ComponentExpand}
                         />
                     }
                 </div>
-                {
-                    modal?.key == "approved" || modal?.key == "rejected" ? <Modal open={modal.open} setOpen={() => setModal({ ...modal, open: false })}>
-                        <h2 className='text-xl font-semibold text-center'>{modal.key == 'approved' ? `Verifikasi` : `Tolak Pengajuan`} Iklan</h2>
-                        <form>
-                            <input type="hidden" name="id" value={modal?.data?.id} />
-                            <p className='text-center my-2'>Apakah anda yakin ingin {modal.key == 'approved' ? "memverifikasi" : "tolak pengajuan"} iklan {modal?.data?.title}?</p>
-                            <div className='flex gap-2 lg:flex-row flex-col-reverse justify-end'>
-                                <div>
-                                    <Button color='white' type='button' onClick={() => {
-                                        setModal({ open: false })
-                                    }}>
-                                        Kembali
-                                    </Button>
-                                </div>
-
-                                <div>
-                                    {
-                                        modal.key == "approved" ?
-                                            <Button className={'flex gap-2 px-2 items-center justify-center'}>
-                                                <CheckIcon className='w-4 h-4' />
-                                                Verifikasi
-                                            </Button> :
-                                            <Button color="danger" className={'flex gap-2 px-2 items-center justify-center'}>
-                                                <XIcon className='w-4 h-4' />
-                                                Tolak Iklan
-                                            </Button>
-                                    }
-                                </div>
-
-                            </div>
-                        </form>
-                    </Modal>
-                        : ""
-                }
             </div>
         </div>
     )

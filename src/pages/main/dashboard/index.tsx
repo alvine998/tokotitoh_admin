@@ -6,31 +6,37 @@ import React from 'react'
 export async function getServerSideProps(context: any) {
     try {
         const { page, size } = context.query;
-        const [brands, categories, reports, users] = await Promise.all([
-            axios.get(CONFIG.base_url_api + `/brands?page=${page || 1}&size=${size || 999999}`, {
+        const [brands, categories, reports, users, ads] = await Promise.all([
+            axios.get(CONFIG.base_url_api + `/brands?page=0&size=${size || 999999}`, {
                 headers: {
                     "bearer-token": "tokotitohapi",
                     "x-partner-code": "id.marketplace.tokotitoh"
                 }
             }),
-            axios.get(CONFIG.base_url_api + `/categories?page=${page || 1}&size=${size || 999999}`, {
+            axios.get(CONFIG.base_url_api + `/categories?page=0&size=${size || 999999}`, {
                 headers: {
                     "bearer-token": "tokotitohapi",
                     "x-partner-code": "id.marketplace.tokotitoh"
                 }
             }),
-            axios.get(CONFIG.base_url_api + `/reports?page=${page || 1}&size=${size || 999999}`, {
+            axios.get(CONFIG.base_url_api + `/reports?page=0&size=${size || 999999}`, {
                 headers: {
                     "bearer-token": "tokotitohapi",
                     "x-partner-code": "id.marketplace.tokotitoh"
                 }
             }),
-            axios.get(CONFIG.base_url_api + `/users?isCustomer=1&page=${page || 1}&size=${size || 999999}`, {
+            axios.get(CONFIG.base_url_api + `/users?isCustomer=1&page=0&size=${size || 999999}`, {
                 headers: {
                     "bearer-token": "tokotitohapi",
                     "x-partner-code": "id.marketplace.tokotitoh"
                 }
-            })
+            }),
+            axios.get(CONFIG.base_url_api + `/ads?page=0&size=${size || 999999}`, {
+                headers: {
+                    "bearer-token": "tokotitohapi",
+                    "x-partner-code": "id.marketplace.tokotitoh"
+                }
+            }),
         ])
         console.log(brands?.data);
         return {
@@ -39,6 +45,7 @@ export async function getServerSideProps(context: any) {
                 categories: categories?.data?.items?.count,
                 users: users?.data?.items?.count,
                 reports: reports?.data?.items?.count,
+                ads: ads?.data?.items?.count,
             }
         }
     } catch (error) {
@@ -51,7 +58,7 @@ export async function getServerSideProps(context: any) {
     }
 }
 
-export default function Dashboard({ brands, categories, users, reports }: any) {
+export default function Dashboard({ brands, categories, users, reports, ads }: any) {
     return (
         <div>
 
@@ -67,7 +74,7 @@ export default function Dashboard({ brands, categories, users, reports }: any) {
 
                 <div className='bg-orange-500 w-full h-auto p-2 rounded'>
                     <h5 className='text-white font-semibold text-xl'>Total Iklan :</h5>
-                    <p className='text-white text-xl'>5</p>
+                    <p className='text-white text-xl'>{ads || 0}</p>
                 </div>
 
                 <div className='bg-blue-500 w-full h-auto p-2 rounded'>
