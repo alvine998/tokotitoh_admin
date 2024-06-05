@@ -16,7 +16,7 @@ export async function getServerSideProps(context: any) {
     try {
         const { page, size, search } = context.query;
         const { id } = context.params;
-        const result = await axios.get(CONFIG.base_url_api + `/subcategories?category_id=${id}&page=${page || 1}&size=${size || 10}&search=${search || ""}`, {
+        const result = await axios.get(CONFIG.base_url_api + `/subcategories?pagination=true&category_id=${id}&page=${+page - 1}&size=${size || 10}&search=${search || ""}`, {
             headers: {
                 "bearer-token": "tokotitohapi",
                 "x-partner-code": "id.marketplace.tokotitoh"

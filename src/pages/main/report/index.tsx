@@ -7,7 +7,7 @@ import { storage } from '@/config/firebase'
 import { Textarea } from '@headlessui/react'
 import axios from 'axios'
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
-import { EyeIcon, PencilIcon, PlusIcon, ReplyIcon, SaveAllIcon, Search, Trash2Icon, TrashIcon } from 'lucide-react'
+import { EyeIcon, PencilIcon, PlusIcon, ReplyIcon, SaveAllIcon, Search, SendIcon, Trash2Icon, TrashIcon } from 'lucide-react'
 import Image from 'next/image'
 import { redirect } from 'next/navigation'
 import { useRouter } from 'next/router'
@@ -19,7 +19,7 @@ import Swal from 'sweetalert2'
 export async function getServerSideProps(context: any) {
     try {
         const { page, size, search } = context.query;
-        const result = await axios.get(CONFIG.base_url_api + `/reports?page=${page || 0}&size=${size || 10}&search=${search || ""}`, {
+        const result = await axios.get(CONFIG.base_url_api + `/reports?pagination=true&page=${+page - 1}&size=${size || 10}&search=${search || ""}`, {
             headers: {
                 "bearer-token": "tokotitohapi",
                 "x-partner-code": "id.marketplace.tokotitoh"
@@ -177,6 +177,7 @@ export default function Category({ table }: any) {
                                 className="block w-full rounded-md border-0 py-1.5 pl-4 pr-2 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 focus:outline-none sm:text-sm sm:leading-6 my-4"
                                 name='replies'
                                 placeholder='Ketik Disini...'
+                                required
                             />
                             <input type="hidden" name="id" value={modal?.data?.id || ""} />
                             <div className='flex lg:gap-2 gap-0 lg:flex-row flex-col-reverse justify-end'>
@@ -189,8 +190,8 @@ export default function Category({ table }: any) {
                                 </div>
                                 <div>
                                     <Button color='info' className={'flex gap-2 px-2 items-center justify-center'}>
-                                        <SaveAllIcon className='w-4 h-4' />
-                                        Simpan
+                                        <SendIcon className='w-4 h-4' />
+                                        Kirim
                                     </Button>
                                 </div>
 

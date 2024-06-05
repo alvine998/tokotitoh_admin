@@ -28,7 +28,7 @@ export async function getServerSideProps(context: any) {
     try {
         const { page, size, search, brand_id } = context.query;
         const { id } = context.params;
-        const result = await axios.get(CONFIG.base_url_api + `/brands?category_id=${id}&page=${page || 1}&size=${size || 10}&search=${search || ""}`, {
+        const result = await axios.get(CONFIG.base_url_api + `/brands?pagination=true&category_id=${id}&page=${+page - 1}&size=${size || 10}&search=${search || ""}`, {
             headers: {
                 "bearer-token": "tokotitohapi",
                 "x-partner-code": "id.marketplace.tokotitoh"
@@ -141,12 +141,6 @@ export default function PropertyRoom({ id, detail, table }: any) {
         e?.preventDefault();
         const formData = Object.fromEntries(new FormData(e.target))
         try {
-            if (!image) {
-                return Swal.fire({
-                    icon: "error",
-                    text: "Logo Wajib Diisi"
-                })
-            }
             const payload = {
                 id: formData?.id,
                 image: image,

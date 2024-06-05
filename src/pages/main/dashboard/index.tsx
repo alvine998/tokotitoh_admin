@@ -6,7 +6,7 @@ import React from 'react'
 export async function getServerSideProps(context: any) {
     try {
         const { page, size } = context.query;
-        const [brands, categories, users] = await Promise.all([
+        const [brands, categories, reports, users] = await Promise.all([
             axios.get(CONFIG.base_url_api + `/brands?page=${page || 1}&size=${size || 999999}`, {
                 headers: {
                     "bearer-token": "tokotitohapi",
@@ -19,12 +19,12 @@ export async function getServerSideProps(context: any) {
                     "x-partner-code": "id.marketplace.tokotitoh"
                 }
             }),
-            // axios.get(CONFIG.base_url_api + `/ads?page=${page || 1}&size=${size || 999999}`, {
-            //     headers: {
-            //         "bearer-token": "tokotitohapi",
-            //         "x-partner-code": "id.marketplace.tokotitoh"
-            //     }
-            // }),
+            axios.get(CONFIG.base_url_api + `/reports?page=${page || 1}&size=${size || 999999}`, {
+                headers: {
+                    "bearer-token": "tokotitohapi",
+                    "x-partner-code": "id.marketplace.tokotitoh"
+                }
+            }),
             axios.get(CONFIG.base_url_api + `/users?isCustomer=1&page=${page || 1}&size=${size || 999999}`, {
                 headers: {
                     "bearer-token": "tokotitohapi",
@@ -38,6 +38,7 @@ export async function getServerSideProps(context: any) {
                 brands: brands?.data?.items?.count,
                 categories: categories?.data?.items?.count,
                 users: users?.data?.items?.count,
+                reports: reports?.data?.items?.count,
             }
         }
     } catch (error) {
@@ -50,7 +51,7 @@ export async function getServerSideProps(context: any) {
     }
 }
 
-export default function Dashboard({brands, categories, users}: any) {
+export default function Dashboard({ brands, categories, users, reports }: any) {
     return (
         <div>
 
@@ -71,7 +72,7 @@ export default function Dashboard({brands, categories, users}: any) {
 
                 <div className='bg-blue-500 w-full h-auto p-2 rounded'>
                     <h5 className='text-white font-semibold text-xl'>Total Laporan :</h5>
-                    <p className='text-white text-xl'>25</p>
+                    <p className='text-white text-xl'>{reports || 0}</p>
                 </div>
 
                 <div className='bg-gray-500 w-full h-auto p-2 rounded'>

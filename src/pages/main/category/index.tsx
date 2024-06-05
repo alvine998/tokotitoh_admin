@@ -18,12 +18,13 @@ import Swal from 'sweetalert2'
 export async function getServerSideProps(context: any) {
     try {
         const { page, size, search } = context.query;
-        const result = await axios.get(CONFIG.base_url_api + `/categories?page=${page || 0}&size=${size || 10}&search=${search || ""}`, {
+        const result = await axios.get(CONFIG.base_url_api + `/categories?pagination=true&page=${+page - 1}&size=${+size || 10}&search=${search || ""}`, {
             headers: {
                 "bearer-token": "tokotitohapi",
                 "x-partner-code": "id.marketplace.tokotitoh"
             }
         })
+        console.log(result?.data);
         return {
             props: {
                 table: result?.data

@@ -2,81 +2,50 @@ import Button from '@/components/Button'
 import Input from '@/components/Input'
 import Modal, { useModal } from '@/components/Modal'
 import { CustomTableStyle } from '@/components/table/CustomTableStyle'
+import { CONFIG } from '@/config'
 import { toMoney } from '@/utils'
+import axios from 'axios'
 import { CheckIcon, PencilIcon, PlusIcon, SaveAllIcon, Trash2Icon, TrashIcon, XIcon } from 'lucide-react'
+import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import DataTable, { ExpanderComponentProps } from 'react-data-table-component'
 
-const data: any = [
-    {
-        id: 1,
-        user_id: 1,
-        user_name: "alfa",
-        title: "Toyota Avanza 2012 Q",
-        brand_id: 1,
-        brand_name: "Toyota",
-        type_id: 1,
-        type_name: "Avanza",
-        category_id: 1,
-        category_name: "Mobil",
-        subcategory_id: 1,
-        subcategory_name: "Mobil Dijual",
-        price: 87000000,
-        description: "-",
-        province_id: 1,
-        province_name: "Jakarta",
-        city_id: 1,
-        city_name: "Jakarta Selatan",
-        district_id: 1,
-        district_name: "Menteng",
-        images: [
-            'image1.jpg',
-            'image2.jpg'
-        ],
-        km: 90000,
-        transmission: 'AT',
-        year: 2012,
-        plat_no: 'B-2345-UKC',
-        color: "Hitam",
-        ownership: "individual",
-        status: 1
-    },
-    {
-        id: 2,
-        user_id: 1,
-        user_name: "alfa",
-        title: "Toyota Avanza 2012 Q",
-        brand_id: 1,
-        brand_name: "Toyota",
-        type_id: 1,
-        type_name: "Avanza",
-        category_id: 1,
-        category_name: "Mobil",
-        subcategory_id: 1,
-        subcategory_name: "Mobil Dijual",
-        price: 87000000,
-        description: "-",
-        province_id: 1,
-        province_name: "Jakarta",
-        city_id: 1,
-        city_name: "Jakarta Selatan",
-        district_id: 1,
-        district_name: "Menteng",
-        images: [
-            'image1.jpg',
-            'image2.jpg'
-        ],
-        km: 90000,
-        transmission: 'AT',
-        year: 2012,
-        plat_no: 'B-2345-UKC',
-        color: "Hitam",
-        ownership: "individual",
-        status: 1
+export async function getServerSideProps(context: any) {
+    try {
+        const { page, size } = context.query;
+        const result = await axios.get(CONFIG.base_url_api + `/ads?pagination=true&page=${+page - 1}&size=${size || 10}`, {
+            headers: {
+                "bearer-token": "tokotitohapi",
+                "x-partner-code": "id.marketplace.tokotitoh"
+            }
+        })
+        return {
+            props: {
+                table: result?.data
+            }
+        }
+    } catch (error: any) {
+        console.log(error);
+        if (error?.response?.status == 401) {
+            return {
+                redirect: {
+                    destination: '/',
+                    permanent: false,
+                }
+            }
+        }
+        return {
+            props: {
+                error: error?.response?.data?.message,
+            }
+        }
     }
-]
+}
 
-export default function User() {
+export default function User({ table }: any) {
+    const router = useRouter();
+    const [filter, setFilter] = useState<any>(router.query)
+
     const [show, setShow] = useState<boolean>(false)
     const [modal, setModal] = useState<useModal>()
     useEffect(() => {
@@ -84,6 +53,10 @@ export default function User() {
             setShow(true)
         }
     }, [])
+    useEffect(() => {
+        const queryFilter = new URLSearchParams(filter).toString();
+        router.push(`?${queryFilter}`)
+    }, [filter])
     const CustomerColumn: any = [
         {
             name: "Judul",
@@ -136,7 +109,7 @@ export default function User() {
             { title: "Tahun", value: data?.year },
             { title: "Transmisi", value: data?.transmission },
             { title: "Trip KM", value: toMoney(data?.km) },
-            { title: "Plat Nomor", value: data?.plat_no?.replaceAll("-", " ") },
+            { title: "Plat Nomor", value: data?.plat_no?.replaceAll("_", " ") },
             { title: "Jenis Kepemilikan", value: data?.ownership },
             { title: "Warna", value: data?.color },
             { title: "Lokasi", value: `${data?.district_name}, ${data?.city_name}, ${data?.province_name}` }
@@ -170,12 +143,23 @@ export default function User() {
                     {
                         show &&
                         <DataTable
+                            pagination
+                            onChangePage={(pageData) => {
+                                setFilter({ ...filter, page: pageData })
+                            }}
+                            onChangeRowsPerPage={(currentRow, currentPage) => {
+                                setFilter({ ...filter, page: currentPage, size: currentRow })
+                            }}
+                            responsive={true}
+                            paginationTotalRows={table?.items?.count}
+                            paginationDefaultPage={1}
+                            paginationServer={true}
+                            striped
                             columns={CustomerColumn}
-                            data={data}
-                            // selectableRows
+                            data={table?.items?.rows}
+                            customStyles={CustomTableStyle}
                             expandableRows={true}
                             expandableRowsComponent={ComponentExpand}
-                            customStyles={CustomTableStyle}
                         />
                     }
                 </div>

@@ -16,7 +16,7 @@ import Swal from 'sweetalert2'
 export async function getServerSideProps(context: any) {
     try {
         const { page, size } = context.query;
-        const result = await axios.get(CONFIG.base_url_api + `/partners?page=${page || 0}&size=${size || 10}`, {
+        const result = await axios.get(CONFIG.base_url_api + `/partners?pagination=true&page=${+page - 1}&size=${size || 10}`, {
             headers: { "bearer-token": "tokotitohapi" }
         })
         return {
