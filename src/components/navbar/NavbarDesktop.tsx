@@ -45,7 +45,7 @@ export default function NavbarDesktop({ children, session }: { children: ReactNo
         },
     ]
     return (
-        <div className='overflow-hidden'>
+        <div>
             {/* Topbar */}
             <div className='bg-green-600 w-full h-10 flex justify-end items-center px-10'>
                 {/* <button className='flex items-center gap-2'>
@@ -111,7 +111,7 @@ export default function NavbarDesktop({ children, session }: { children: ReactNo
                     </div>
 
                 </div>
-                <main className='container mt-5 ml-[280px] px-10 h-[91vh] w-full overflow-y-auto'>
+                <main className='container mt-5 ml-[280px] px-10 h-[90vh] w-full overflow-y-auto'>
                     {children}
                 </main>
             </div>
