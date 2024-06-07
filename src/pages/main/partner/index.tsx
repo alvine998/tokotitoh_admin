@@ -76,7 +76,7 @@ export default function Partner({ table }: any) {
                 })
             }
             const payload = {
-                id: formData?.id || null,
+                id: formData?.id || 0,
                 logo: image,
                 ...formData
             }
