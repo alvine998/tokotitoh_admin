@@ -89,11 +89,10 @@ export default function PropertyRoomType({ id, table, detail }: any) {
         const formData = Object.fromEntries(new FormData(e.target))
         try {
             const payload = {
-                id: formData?.id || null,
                 ...formData,
                 category_id: id
             }
-            if (payload?.id) {
+            if (formData?.id) {
                 const result = await axios.patch(CONFIG.base_url_api + `/subcategory`, payload, {
                     headers: {
                         "bearer-token": "tokotitohapi",
@@ -147,8 +146,8 @@ export default function PropertyRoomType({ id, table, detail }: any) {
             <div className='mt-5'>
                 <div className='flex lg:flex-row flex-col justify-between items-center'>
                     <div className='lg:w-auto w-full'>
-                        <Input label='' type='search' defaultValue={filter?.search} placeholder='Cari disini...' onChange={(e)=>{
-                           setFilter({...filter, search: e.target.value})
+                        <Input label='' type='search' defaultValue={filter?.search} placeholder='Cari disini...' onChange={(e) => {
+                            setFilter({ ...filter, search: e.target.value })
                         }} />
                     </div>
                     <div className='lg:w-auto w-full'>
@@ -188,7 +187,10 @@ export default function PropertyRoomType({ id, table, detail }: any) {
                         <h2 className='text-xl font-semibold text-center'>{modal.key == 'create' ? "Tambah" : "Ubah"} Sub Kategori</h2>
                         <form onSubmit={onSubmit}>
                             <Input label='Nama Sub Kategori' placeholder='Masukkan Nama Sub Kategori' name='name' defaultValue={modal?.data?.name || ""} required />
-                            <input type="hidden" name="id" value={modal?.data?.id || ""} />
+                            {
+                                modal.key == "update" &&
+                                <input type="hidden" name="id" value={modal?.data?.id || null} />
+                            }
                             <div className='flex lg:gap-2 gap-0 lg:flex-row flex-col-reverse justify-end'>
                                 <div>
                                     <Button color='white' type='button' onClick={() => {

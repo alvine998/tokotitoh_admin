@@ -94,11 +94,10 @@ export default function PropertyRoom({ id, detail, table, brand_id }: any) {
         const formData = Object.fromEntries(new FormData(e.target))
         try {
             const payload = {
-                id: formData?.id || null,
                 brand_id: brand_id,
                 ...formData
             }
-            if (payload?.id) {
+            if (formData?.id) {
                 const result = await axios.patch(CONFIG.base_url_api + `/type`, payload, {
                     headers: {
                         "bearer-token": "tokotitohapi",
@@ -190,7 +189,10 @@ export default function PropertyRoom({ id, detail, table, brand_id }: any) {
                         <h2 className='text-xl font-semibold text-center'>{modal.key == 'create' ? "Tambah" : "Ubah"} Tipe</h2>
                         <form onSubmit={onSubmit}>
                             <Input label='Nama Tipe' placeholder='Masukkan Nama Tipe' name='name' defaultValue={modal?.data?.name || ""} required />
-                            <input type="hidden" name="id" value={modal?.data?.id || ""} />
+                            {
+                                modal.key == "update" &&
+                                <input type="hidden" name="id" value={modal?.data?.id || null} />
+                            }
                             <div className='flex lg:gap-2 gap-0 lg:flex-row flex-col-reverse justify-end'>
                                 <div>
                                     <Button color='white' type='button' onClick={() => {

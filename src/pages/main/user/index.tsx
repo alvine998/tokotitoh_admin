@@ -114,10 +114,9 @@ export default function User({ table }: any) {
         const formData = Object.fromEntries(new FormData(e.target))
         try {
             const payload = {
-                id: formData?.id || null,
                 ...formData
             }
-            if (payload?.id) {
+            if (formData?.id) {
                 const result = await axios.patch(CONFIG.base_url_api + `/user`, payload, {
                     headers: {
                         "bearer-token": "tokotitohapi",
@@ -209,7 +208,10 @@ export default function User({ table }: any) {
                     modal?.key == "create" || modal?.key == "update" ? <Modal open={modal.open} setOpen={() => setModal({ ...modal, open: false })}>
                         <h2 className='text-xl font-semibold text-center'>{modal.key == 'create' ? "Tambah" : "Ubah"} Akses Admin</h2>
                         <form onSubmit={onSubmit}>
-                            <input type="hidden" name="id" value={modal?.data?.id} />
+                            {
+                                modal.key == "update" &&
+                                <input type="hidden" name="id" value={modal?.data?.id || null} />
+                            }
                             <Input label='Nama' placeholder='Masukkan Nama' name='name' defaultValue={modal?.data?.name || ""} required />
                             <Input label='No Telepon' placeholder='Masukkan No Telepon' name='phone' type='number' defaultValue={modal?.data?.phone || ""} required />
                             <Input label='Email' placeholder='Masukkan Email' name='email' type='email' defaultValue={modal?.data?.email || ""} />

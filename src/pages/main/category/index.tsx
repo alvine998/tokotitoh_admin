@@ -140,11 +140,10 @@ export default function Category({ table }: any) {
                 })
             }
             const payload = {
-                id: formData?.id || null,
                 icon: image,
                 ...formData
             }
-            if (payload?.id) {
+            if (formData?.id) {
                 const result = await axios.patch(CONFIG.base_url_api + `/category`, payload, {
                     headers: {
                         "bearer-token": "tokotitohapi",
@@ -248,7 +247,10 @@ export default function Category({ table }: any) {
                             {
                                 image && <a href={image} target='_blank' className='text-blue-500'>Lihat</a>
                             }
-                            <input type="hidden" name="id" value={modal?.data?.id || ""} />
+                            {
+                                modal.key == "update" &&
+                                <input type="hidden" name="id" value={modal?.data?.id || null} />
+                            }
                             <div className='flex lg:gap-2 gap-0 lg:flex-row flex-col-reverse justify-end'>
                                 <div>
                                     <Button color='white' type='button' onClick={() => {
