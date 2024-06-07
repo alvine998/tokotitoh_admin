@@ -76,12 +76,11 @@ export default function Partner({ table }: any) {
                 })
             }
             const payload = {
-                id: formData?.id || 0,
                 logo: image,
                 ...formData
             }
-            if (payload?.id) {
-                const result = await axios.patch(CONFIG.base_url_api + `/partner`, payload, {
+            if (formData?.id) {
+                const result = await axios.patch(CONFIG.base_url_api + `/partner`, { ...payload, id: formData?.id }, {
                     headers: { "bearer-token": "tokotitohapi" }
                 })
             } else {
