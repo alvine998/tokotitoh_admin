@@ -208,7 +208,10 @@ export default function Partner({ table }: any) {
                     modal?.key == "create" || modal?.key == "update" ? <Modal open={modal.open} setOpen={() => setModal({ ...modal, open: false })}>
                         <h2 className='text-xl font-semibold text-center'>{modal.key == 'create' ? "Tambah" : "Ubah"} Mitra</h2>
                         <form onSubmit={onSubmit}>
-                            <input type="hidden" name="id" value={modal?.data?.id || null} />
+                            {
+                                modal.key == "update" && 
+                                <input type="hidden" name="id" value={modal?.data?.id || null} />
+                            }
                             <Input label='Nama Mitra' placeholder='Masukkan Nama Mitra' name='name' defaultValue={modal?.data?.name || ""} required />
                             <Input label='Kode Mitra' placeholder='Masukkan Kode Mitra' name='package_name' defaultValue={modal?.data?.package_name || ""} />
                             <Input label='Logo' placeholder='Masukkan logo' type='file' onChange={handleImage} accept='image/*' />
