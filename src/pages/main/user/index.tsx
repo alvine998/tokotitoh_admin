@@ -114,7 +114,7 @@ export default function User({ table }: any) {
         const formData = Object.fromEntries(new FormData(e.target))
         try {
             const payload = {
-                id: formData?.id,
+                id: formData?.id || null,
                 ...formData
             }
             if (payload?.id) {

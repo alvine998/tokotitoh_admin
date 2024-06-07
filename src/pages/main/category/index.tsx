@@ -140,7 +140,7 @@ export default function Category({ table }: any) {
                 })
             }
             const payload = {
-                id: formData?.id,
+                id: formData?.id || null,
                 icon: image,
                 ...formData
             }

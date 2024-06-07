@@ -115,10 +115,10 @@ export default function Detail({ detail }: any) {
                 }
 
             </div>
-            <div className='py-4 flex gap-2 max-w-full items-center'>
+            <div className='py-4 flex gap-4 items-center overflow-y-auto'>
                 {
                     detail?.images?.map((val: any, index: number) => (
-                        <Image key={index} layout='relative' width={300} height={300} className='w-[300px] h-[200px]' alt='images' src={val} />
+                        <Image key={index} layout='relative' width={300} height={300} className='w-full h-[200px]' alt='images' src={val} />
                     ))
                 }
             </div>

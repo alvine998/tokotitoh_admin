@@ -89,7 +89,7 @@ export default function PropertyRoomType({ id, table, detail }: any) {
         const formData = Object.fromEntries(new FormData(e.target))
         try {
             const payload = {
-                id: formData?.id,
+                id: formData?.id || null,
                 ...formData,
                 category_id: id
             }
