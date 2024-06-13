@@ -23,7 +23,7 @@ const data: any = [
 export async function getServerSideProps(context: any) {
     try {
         const { page, size } = context.query;
-        const result = await axios.get(CONFIG.base_url_api + `/users?pagination=true&isCustomer=0&page=${+page - 1}&size=${size || 10}`, {
+        const result = await axios.get(CONFIG.base_url_api + `/users?pagination=true&role=super_admin,admin&page=${+page - 1}&size=${size || 10}`, {
             headers: {
                 "bearer-token": "tokotitohapi",
                 "x-partner-code": "id.marketplace.tokotitoh"
