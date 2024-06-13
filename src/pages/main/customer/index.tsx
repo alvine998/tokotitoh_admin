@@ -144,7 +144,7 @@ export default function Customer({ table }: any) {
                 <div className='flex lg:flex-row flex-col justify-between items-center'>
                     <div className='lg:w-auto w-full'>
                         <Input label='' type='search' placeholder='Cari disini...' defaultValue={filter?.search} onChange={(e) => {
-                            setFilter({ ...filter, Search: e.target.value })
+                            setFilter({ ...filter, search: e.target.value })
                         }} />
                     </div>
                 </div>
