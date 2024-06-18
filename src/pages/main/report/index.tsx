@@ -65,6 +65,11 @@ export default function Category({ table }: any) {
     }, [filter])
     const Column: any = [
         {
+            name: "Iklan",
+            sortable: true,
+            selector: (row: any) => row?.ads_id + " - " + row?.ads_name
+        },
+        {
             name: "Nama Pengguna",
             sortable: true,
             selector: (row: any) => row?.user_name
@@ -106,33 +111,45 @@ export default function Category({ table }: any) {
         const formData = Object.fromEntries(new FormData(e.target))
         try {
             const payload = {
-                ...formData
+                title: formData?.title,
+                content: formData?.content,
+                user_id: formData?.user_id
             }
-            if (formData?.id) {
-                const result = await axios.patch(CONFIG.base_url_api + `/report`, payload, {
+            const payload2 = {
+                id: formData?.id,
+                status: formData?.status
+            }
+            const result = await axios.post(CONFIG.base_url_api + `/notification`, payload, {
+                headers: {
+                    "bearer-token": "tokotitohapi",
+                    "x-partner-code": "id.marketplace.tokotitoh"
+                }
+            })
+
+            if (result) {
+                await axios.patch(CONFIG.base_url_api + `/report`, payload2, {
                     headers: {
                         "bearer-token": "tokotitohapi",
                         "x-partner-code": "id.marketplace.tokotitoh"
                     }
                 })
-            } else {
-                const result = await axios.post(CONFIG.base_url_api + `/report`, payload, {
-                    headers: {
-                        "bearer-token": "tokotitohapi",
-                        "x-partner-code": "id.marketplace.tokotitoh"
-                    }
-                })
             }
+
             Swal.fire({
                 icon: "success",
-                text: "Data Berhasil Disimpan"
+                text: "Data Berhasil Dikirim"
             })
             setModal({ ...modal, open: false })
             router.push('')
         } catch (error) {
             console.log(error);
+            Swal.fire({
+                icon: "error",
+                text: "Gagal Data Berhasil Dikirim"
+            })
         }
     }
+
     return (
         <div>
             <h2 className='text-2xl font-semibold'>Laporan</h2>
@@ -172,16 +189,16 @@ export default function Category({ table }: any) {
                     modal?.key == "create" || modal?.key == "update" ? <Modal open={modal.open} setOpen={() => setModal({ ...modal, open: false })}>
                         <h2 className='text-xl font-semibold text-center'>Balas Laporan</h2>
                         <form onSubmit={onSubmit}>
+                            <Input label='Judul' name='title' placeholder='Masukkan judul balasan' required />
                             <Textarea
                                 className="block w-full rounded-md border-0 py-1.5 pl-4 pr-2 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 focus:outline-none sm:text-sm sm:leading-6 my-4"
-                                name='replies'
+                                name='content'
                                 placeholder='Ketik Disini...'
                                 required
                             />
-                            {
-                                modal.key == "update" &&
-                                <input type="hidden" name="id" value={modal?.data?.id || null} />
-                            }
+                            <input type="hidden" name="status" value={1} />
+                            <input type="hidden" name="user_id" value={modal.data.user_id} />
+                            <input type="hidden" name="id" value={modal.data.id} />
                             <div className='flex lg:gap-2 gap-0 lg:flex-row flex-col-reverse justify-end'>
                                 <div>
                                     <Button color='white' type='button' onClick={() => {

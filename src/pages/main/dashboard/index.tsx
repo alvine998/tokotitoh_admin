@@ -25,20 +25,19 @@ export async function getServerSideProps(context: any) {
                     "x-partner-code": "id.marketplace.tokotitoh"
                 }
             }),
-            axios.get(CONFIG.base_url_api + `/users?isCustomer=1&page=0&size=${size || 999999}`, {
+            axios.get(CONFIG.base_url_api + `/users?role=customer&page=0&size=${size || 999999}`, {
                 headers: {
                     "bearer-token": "tokotitohapi",
                     "x-partner-code": "id.marketplace.tokotitoh"
                 }
             }),
-            axios.get(CONFIG.base_url_api + `/ads?page=0&size=${size || 999999}`, {
+            axios.get(CONFIG.base_url_api + `/ads?status=1&page=0&size=${size || 999999}`, {
                 headers: {
                     "bearer-token": "tokotitohapi",
                     "x-partner-code": "id.marketplace.tokotitoh"
                 }
             }),
         ])
-        console.log(brands?.data);
         return {
             props: {
                 brands: brands?.data?.items?.count,
@@ -73,7 +72,7 @@ export default function Dashboard({ brands, categories, users, reports, ads }: a
                 </div>
 
                 <div className='bg-orange-500 w-full h-auto p-2 rounded'>
-                    <h5 className='text-white font-semibold text-xl'>Total Iklan :</h5>
+                    <h5 className='text-white font-semibold text-xl'>Total Iklan Aktif :</h5>
                     <p className='text-white text-xl'>{ads || 0}</p>
                 </div>
 
