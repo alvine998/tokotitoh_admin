@@ -4,6 +4,7 @@ import { CONFIG } from '@/config';
 import { toMoney } from '@/utils';
 import axios from 'axios';
 import { CheckIcon, CheckSquareIcon, ChevronLeft, RecycleIcon, XIcon, XSquareIcon } from 'lucide-react';
+import moment from 'moment';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react'
@@ -41,14 +42,14 @@ export default function Detail({ detail }: any) {
         { title: "Harga", value: toMoney(detail?.price) },
         { title: "Kategori", value: detail?.category_name },
         { title: "Sub Kategori", value: detail?.subcategory_name },
-        { title: "Brand", value: detail?.brand_name },
-        { title: "Tipe", value: detail?.type_name },
-        { title: "Tahun", value: detail?.year },
-        { title: "Transmisi", value: detail?.transmission },
-        { title: "Trip KM", value: toMoney(detail?.km) },
-        { title: "Plat Nomor", value: detail?.plat_no?.replaceAll("_", " ") },
-        { title: "Jenis Kepemilikan", value: detail?.ownership },
-        { title: "Warna", value: detail?.color },
+        { title: "Brand", value: detail?.brand_name || "-"},
+        { title: "Tipe", value: detail?.type_name || "-"},
+        { title: "Tahun", value: detail?.year || "-"},
+        { title: "Transmisi", value: detail?.transmission || "-" },
+        { title: "Trip KM", value: toMoney(detail?.km) || "-" },
+        { title: "Aktif Sampai", value: moment(detail?.expired_on).format("DD-MM-YYYY") },
+        { title: "Jenis Kepemilikan", value: detail?.ownership || "-" },
+        { title: "Warna", value: detail?.color || "-"},
         { title: "Deskripsi", value: detail?.description },
     ]
 
@@ -118,7 +119,7 @@ export default function Detail({ detail }: any) {
             <div className='py-4 flex gap-4 items-center overflow-y-auto'>
                 {
                     detail?.images?.map((val: any, index: number) => (
-                        <Image key={index} layout='relative' width={300} height={300} className='w-full h-[200px]' alt='images' src={val} />
+                        <Image key={index} layout='relative' width={300} height={300} className='w-full h-[400px]' alt='images' src={val} />
                     ))
                 }
             </div>

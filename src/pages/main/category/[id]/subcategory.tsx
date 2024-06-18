@@ -186,7 +186,7 @@ export default function PropertyRoomType({ id, table, detail }: any) {
                     modal?.key == "create" || modal?.key == "update" ? <Modal open={modal.open} setOpen={() => setModal({ ...modal, open: false })}>
                         <h2 className='text-xl font-semibold text-center'>{modal.key == 'create' ? "Tambah" : "Ubah"} Sub Kategori</h2>
                         <form onSubmit={onSubmit}>
-                            <Input label='Nama Sub Kategori' placeholder='Masukkan Nama Sub Kategori' name='name' defaultValue={modal?.data?.name || ""} required />
+                            <Input label='Nama Sub Kategori' autoFocus placeholder='Masukkan Nama Sub Kategori' name='name' defaultValue={modal?.data?.name || ""} required />
                             {
                                 modal.key == "update" &&
                                 <input type="hidden" name="id" value={modal?.data?.id || null} />
