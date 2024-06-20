@@ -4,14 +4,16 @@ import { useRouter } from 'next/router'
 import RootLayout from './layout';
 import LayoutDashboard from '@/components/layout/LayoutDashboard';
 import NextNProgress from 'nextjs-progressbar'
+import { getCookie } from 'cookies-next';
+import { useEffect, useState } from 'react';
 
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
-  console.log(router.pathname, 'path');
+
   return router.pathname?.includes('/main') || router.pathname?.includes('/404') ?
     <RootLayout>
       <NextNProgress color="#fff" nonce="my-nonce" />
-      <LayoutDashboard session={pageProps?.session}>
+      <LayoutDashboard>
         <Component {...pageProps} />
       </LayoutDashboard>
     </RootLayout>

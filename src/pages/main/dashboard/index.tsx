@@ -1,11 +1,15 @@
 import ApexChart from '@/components/Chart'
 import { CONFIG } from '@/config';
 import axios from 'axios';
+import { getCookie } from 'cookies-next';
 import React from 'react'
 
 export async function getServerSideProps(context: any) {
     try {
         const { page, size } = context.query;
+        // const { req, res } = context;
+        // const session = getCookie("session", { req, res })
+        // console.log(session);
         const [brands, categories, reports, users, ads] = await Promise.all([
             axios.get(CONFIG.base_url_api + `/brands?page=0&size=${size || 999999}`, {
                 headers: {

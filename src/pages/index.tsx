@@ -2,6 +2,7 @@ import Button from '@/components/Button'
 import Input from '@/components/Input'
 import { CONFIG } from '@/config'
 import axios from 'axios'
+import { setCookie } from 'cookies-next'
 import Head from 'next/head'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
@@ -24,7 +25,7 @@ export default function Login() {
           "x-partner-code": "id.marketplace.tokotitoh"
         }
       })
-      localStorage.setItem('session', JSON.stringify(result.data?.result))
+      setCookie('session', JSON.stringify(result.data?.user))
       Swal.fire({
         icon: "success",
         text: "Selamat Datang Admin"

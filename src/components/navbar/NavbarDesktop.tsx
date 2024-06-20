@@ -1,4 +1,5 @@
 import { Menu, MenuButton, MenuItem, MenuItems, Transition } from '@headlessui/react';
+import { deleteCookie, getCookie } from 'cookies-next';
 import { BookIcon, Building2Icon, ChevronDownCircle, DoorOpenIcon, HomeIcon, NewspaperIcon, PencilIcon, UserCircle, UserCircle2Icon, UserIcon, Users2Icon, Wallet2Icon } from 'lucide-react'
 import Image from 'next/image';
 import { useRouter } from 'next/router'
@@ -53,7 +54,7 @@ export default function NavbarDesktop({ children, session }: { children: ReactNo
                 </button> */}
                 <Menu>
                     <MenuButton className={'flex gap-2 items-center'}>
-                        <p className='text-white'>Halo, Admin</p>
+                        <p className='text-white'>Halo, {session?.name?.toUpperCase()}</p>
                         <ChevronDownCircle color='white' className='w-4' />
                     </MenuButton>
                     <Transition
@@ -75,7 +76,7 @@ export default function NavbarDesktop({ children, session }: { children: ReactNo
                                 </button>
                             </MenuItem> */}
                             <MenuItem>
-                                <button type='button' onClick={()=>router.push('/')} className="group flex w-full items-center gap-2 rounded-lg py-1.5 px-3 data-[focus]:bg-white text-red-500">
+                                <button type='button' onClick={() => { deleteCookie("session"); router.push('/') }} className="group flex w-full items-center gap-2 rounded-lg py-1.5 px-3 data-[focus]:bg-white text-red-500">
                                     <DoorOpenIcon className="size-4 text-red-500" />
                                     Logout
                                 </button>
