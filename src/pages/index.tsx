@@ -54,8 +54,8 @@ export default function Login() {
           <h2 className='text-center text-2xl font-semibold'>LOGIN</h2>
           <form className='mt-4' onSubmit={login}>
             <Input label='Email / No Telepon' placeholder='Masukkan Email / No Telepon' type='text' name='identity' required />
-            <Input label='Password' placeholder='********' type='password' name='password' required />
-            <a href="#" className='flex justify-end text-blue-500 hover:text-blue-700 duration-150 transition-all'>Lupa Password?</a>
+            <Input label='Password' placeholder='********' isPassword name='password' required />
+            {/* <a href="#" className='flex justify-end text-blue-500 hover:text-blue-700 duration-150 transition-all'>Lupa Password?</a> */}
             <div className='mt-5'>
               <Button color='info'>Masuk</Button>
             </div>

@@ -215,7 +215,7 @@ export default function User({ table }: any) {
                             <Input label='Nama' placeholder='Masukkan Nama' name='name' defaultValue={modal?.data?.name || ""} required />
                             <Input label='No Telepon' placeholder='Masukkan No Telepon' name='phone' type='number' defaultValue={modal?.data?.phone || ""} required />
                             <Input label='Email' placeholder='Masukkan Email' name='email' type='email' defaultValue={modal?.data?.email || ""} />
-                            <Input label='Password' placeholder='Masukkan Password' name='password' type='password' defaultValue={""} required={modal.key == 'create'} />
+                            <Input label='Password' placeholder='Masukkan Password' name='password' isPassword defaultValue={""} required={modal.key == 'create'} />
                             <div className='w-full my-2'>
                                 <label className='text-gray-500' htmlFor="x">Peran</label>
                                 <div className='flex gap-5'>
