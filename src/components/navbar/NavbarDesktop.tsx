@@ -3,10 +3,16 @@ import { deleteCookie, getCookie } from 'cookies-next';
 import { BookIcon, Building2Icon, ChevronDownCircle, DoorOpenIcon, HomeIcon, NewspaperIcon, PencilIcon, UserCircle, UserCircle2Icon, UserIcon, Users2Icon, Wallet2Icon } from 'lucide-react'
 import Image from 'next/image';
 import { useRouter } from 'next/router'
-import React, { ReactNode } from 'react'
+import React, { ReactNode, useEffect, useState } from 'react'
 
 export default function NavbarDesktop({ children, session }: { children: ReactNode, session: any }) {
     const router = useRouter();
+    const [show, setShow] = useState<boolean>(false)
+    useEffect(() => {
+        if (typeof window === "undefined") {
+            setShow(true)
+        }
+    }, [])
 
     const navs = [
         {
@@ -54,7 +60,11 @@ export default function NavbarDesktop({ children, session }: { children: ReactNo
                 </button> */}
                 <Menu>
                     <MenuButton className={'flex gap-2 items-center'}>
-                        <p className='text-white'>Halo, {session?.name?.toUpperCase()}</p>
+                        {
+                            show ?
+                                <p className='text-white'>Halo, {session?.name?.toUpperCase()}</p>
+                                : ""
+                        }
                         <ChevronDownCircle color='white' className='w-4' />
                     </MenuButton>
                     <Transition

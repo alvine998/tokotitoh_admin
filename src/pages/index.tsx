@@ -11,9 +11,11 @@ import Swal from 'sweetalert2'
 
 export default function Login() {
   const router = useRouter();
+  const [loading, setLoading] = useState<boolean>(false)
 
   const login = async (e: any) => {
     e?.preventDefault();
+    setLoading(true)
     const formData: any = Object.fromEntries(new FormData(e.target))
     try {
       const payload = {
@@ -30,9 +32,11 @@ export default function Login() {
         icon: "success",
         text: "Selamat Datang Admin"
       })
+      setLoading(false)
       router.push('/main/dashboard')
     } catch (error: any) {
       console.log(error);
+      setLoading(false)
       Swal.fire({
         icon: "error",
         text: error?.response?.data?.message
@@ -57,7 +61,7 @@ export default function Login() {
             <Input label='Password' placeholder='********' isPassword name='password' required />
             {/* <a href="#" className='flex justify-end text-blue-500 hover:text-blue-700 duration-150 transition-all'>Lupa Password?</a> */}
             <div className='mt-5'>
-              <Button color='info'>Masuk</Button>
+              <Button disabled={loading} color='info'>{loading ? "Menunggu..." : "Masuk"}</Button>
             </div>
           </form>
         </div>

@@ -3,6 +3,7 @@ import Input from '@/components/Input'
 import Modal, { useModal } from '@/components/Modal'
 import { CustomTableStyle } from '@/components/table/CustomTableStyle'
 import { CONFIG } from '@/config'
+import { queryToUrlSearchParams } from '@/utils'
 import axios from 'axios'
 import { PencilIcon, PlusIcon, SaveAllIcon, Trash2Icon, TrashIcon } from 'lucide-react'
 import { useRouter } from 'next/router'
@@ -57,6 +58,7 @@ export default function User({ table }: any) {
     const [filter, setFilter] = useState<any>(router.query)
     const [show, setShow] = useState<boolean>(false)
     const [modal, setModal] = useState<useModal>()
+    const [loading, setLoading] = useState<boolean>(false)
     useEffect(() => {
         if (typeof window !== 'undefined') {
             setShow(true)
@@ -109,8 +111,11 @@ export default function User({ table }: any) {
         },
     ]
 
+    const params = queryToUrlSearchParams(router?.query)?.toString();
+
     const onSubmit = async (e: any) => {
         e?.preventDefault();
+        setLoading(true)
         const formData = Object.fromEntries(new FormData(e.target))
         try {
             const payload = {
@@ -135,15 +140,22 @@ export default function User({ table }: any) {
                 icon: "success",
                 text: "Data Berhasil Disimpan"
             })
+            setLoading(false)
             setModal({ ...modal, open: false })
-            router.push('')
-        } catch (error) {
+            router.push(`?${params}`)
+        } catch (error: any) {
+            setLoading(false)
             console.log(error);
+            Swal.fire({
+                icon: "error",
+                text: error?.response?.data?.message
+            })
         }
     }
     const onRemove = async (e: any) => {
+        e?.preventDefault();
+        setLoading(true)
         try {
-            e?.preventDefault();
             const formData = Object.fromEntries(new FormData(e.target))
             const result = await axios.delete(CONFIG.base_url_api + `/user?id=${formData?.id}`, {
                 headers: {
@@ -155,11 +167,17 @@ export default function User({ table }: any) {
                 icon: "success",
                 text: "Data Berhasil Dihapus"
             })
+            setLoading(false)
             setModal({ ...modal, open: false })
-            router.push('')
+            router.push(`?${params}`)
         }
-        catch (error) {
+        catch (error: any) {
+            setLoading(false)
             console.log(error);
+            Swal.fire({
+                icon: "error",
+                text: error?.response?.data?.message
+            })
         }
     }
     return (
@@ -258,9 +276,9 @@ export default function User({ table }: any) {
                                 </div>
 
                                 <div>
-                                    <Button color='info' className={'flex gap-2 px-2 items-center justify-center'}>
+                                    <Button disabled={loading} color='info' className={'flex gap-2 px-2 items-center justify-center'}>
                                         <SaveAllIcon className='w-4 h-4' />
-                                        Simpan
+                                        {loading ? "Menyimpan..." : "Simpan"}
                                     </Button>
                                 </div>
 
@@ -285,9 +303,9 @@ export default function User({ table }: any) {
                                 </div>
 
                                 <div>
-                                    <Button color='danger' className={'flex gap-2 px-2 items-center justify-center'}>
+                                    <Button disabled={loading} color='danger' className={'flex gap-2 px-2 items-center justify-center'}>
                                         <Trash2Icon className='w-4 h-4' />
-                                        Hapus
+                                        {loading ? "Menghapus..." : "Hapus"}
                                     </Button>
                                 </div>
 

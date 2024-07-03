@@ -1,3 +1,5 @@
+import { ParsedUrlQuery } from "querystring";
+
 export const toMoney = (number: number) => {
     // Check if the input is a valid number
     if (isNaN(number)) {
@@ -12,4 +14,23 @@ export const toMoney = (number: number) => {
 
     // Add the currency symbol
     return `${price}`;
+}
+
+export const queryToUrlSearchParams = (query: ParsedUrlQuery): URLSearchParams => {
+    const params = new URLSearchParams();
+
+    Object.keys(query).forEach(key => {
+        const value = query[key];
+        if (Array.isArray(value)) {
+            value.forEach(val => {
+                if (val !== undefined) {
+                    params.append(key, val);
+                }
+            });
+        } else if (value !== undefined) {
+            params.append(key, value);
+        }
+    });
+
+    return params;
 }

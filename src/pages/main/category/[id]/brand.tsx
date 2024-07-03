@@ -5,6 +5,7 @@ import { CustomTableStyle } from '@/components/table/CustomTableStyle'
 import PropertyTabs from '@/components/tabs/PropertyTabs'
 import { CONFIG } from '@/config'
 import { storage } from '@/config/firebase'
+import { queryToUrlSearchParams } from '@/utils'
 import axios from 'axios'
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
 import { CheckIcon, EyeIcon, PencilIcon, PlusIcon, SaveAllIcon, Trash2Icon, TrashIcon } from 'lucide-react'
@@ -106,6 +107,7 @@ export default function PropertyRoom({ id, detail, table }: any) {
     const [filter, setFilter] = useState<any>(router.query)
     const [image, setImage] = useState<any>();
     const [progress, setProgress] = useState<any>();
+    const [loading, setLoading] = useState<boolean>(false)
 
     useEffect(() => {
         const queryFilter = new URLSearchParams(filter).toString();
@@ -137,8 +139,11 @@ export default function PropertyRoom({ id, detail, table }: any) {
         }
     }
 
+    const params = queryToUrlSearchParams(router?.query)?.toString();
+
     const onSubmit = async (e: any) => {
         e?.preventDefault();
+        setLoading(true)
         const formData = Object.fromEntries(new FormData(e.target))
         try {
             const payload = {
@@ -165,17 +170,24 @@ export default function PropertyRoom({ id, detail, table }: any) {
                 icon: "success",
                 text: "Data Berhasil Disimpan"
             })
+            setLoading(false)
             setImage(null)
             setProgress(null)
             setModal({ ...modal, open: false })
-            router.push(`/main/category/${id}/brand`)
-        } catch (error) {
+            router.push(`/main/category/${id}/brand?${params}`)
+        } catch (error: any) {
+            setLoading(false)
+            Swal.fire({
+                icon: "error",
+                text: error?.response?.data?.message
+            })
             console.log(error);
         }
     }
     const onRemove = async (e: any) => {
+        e?.preventDefault();
+        setLoading(true)
         try {
-            e?.preventDefault();
             const formData = Object.fromEntries(new FormData(e.target))
             const result = await axios.delete(CONFIG.base_url_api + `/brand?id=${formData?.id}`, {
                 headers: {
@@ -187,10 +199,16 @@ export default function PropertyRoom({ id, detail, table }: any) {
                 icon: "success",
                 text: "Data Berhasil Dihapus"
             })
+            setLoading(false)
             setModal({ ...modal, open: false })
-            router.push(`/main/category/${id}/brand`)
+            router.push(`/main/category/${id}/brand?${params}`)
         }
-        catch (error) {
+        catch (error: any) {
+            setLoading(false)
+            Swal.fire({
+                icon: "error",
+                text: error?.response?.data?.message
+            })
             console.log(error);
         }
     }
@@ -282,9 +300,9 @@ export default function PropertyRoom({ id, detail, table }: any) {
                                 </div>
 
                                 <div>
-                                    <Button color='info' className={'flex gap-2 px-2 items-center justify-center'}>
+                                    <Button disabled={loading} color='info' className={'flex gap-2 px-2 items-center justify-center'}>
                                         <SaveAllIcon className='w-4 h-4' />
-                                        Simpan
+                                        {loading ? "Menyimpan..." : "Simpan"}
                                     </Button>
                                 </div>
 
@@ -309,9 +327,9 @@ export default function PropertyRoom({ id, detail, table }: any) {
                                 </div>
 
                                 <div>
-                                    <Button color='danger' className={'flex gap-2 px-2 items-center justify-center'}>
+                                    <Button disabled={loading} color='danger' className={'flex gap-2 px-2 items-center justify-center'}>
                                         <Trash2Icon className='w-4 h-4' />
-                                        Hapus
+                                        {loading ? "Menghapus..." : "Hapus"}
                                     </Button>
                                 </div>
 

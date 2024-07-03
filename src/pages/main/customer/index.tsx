@@ -3,6 +3,7 @@ import Input from '@/components/Input'
 import Modal, { useModal } from '@/components/Modal'
 import { CustomTableStyle } from '@/components/table/CustomTableStyle'
 import { CONFIG } from '@/config'
+import { queryToUrlSearchParams } from '@/utils'
 import axios from 'axios'
 import { PencilIcon, PlusIcon, SaveAllIcon, Trash2Icon, TrashIcon } from 'lucide-react'
 import { useRouter } from 'next/router'
@@ -56,6 +57,9 @@ export default function Customer({ table }: any) {
     const [filter, setFilter] = useState<any>(router.query);
     const [show, setShow] = useState<boolean>(false)
     const [modal, setModal] = useState<useModal>()
+    const [loading, setLoading] = useState<boolean>(false)
+    const params = queryToUrlSearchParams(router?.query)?.toString();
+
     useEffect(() => {
         if (typeof window !== 'undefined') {
             setShow(true)
@@ -105,11 +109,13 @@ export default function Customer({ table }: any) {
 
     const onSubmit = async (e: any) => {
         e?.preventDefault();
+        setLoading(true)
         const formData = Object.fromEntries(new FormData(e.target))
         try {
             const payload = {
-                id: formData?.id || null,
-                ...formData
+                id: +formData?.id || null,
+                email: formData?.email,
+                status: +formData?.status
             }
             if (payload?.id) {
                 const result = await axios.patch(CONFIG.base_url_api + `/user`, payload, {
@@ -130,10 +136,16 @@ export default function Customer({ table }: any) {
                 icon: "success",
                 text: "Data Berhasil Disimpan"
             })
+            setLoading(false)
             setModal({ ...modal, open: false })
-            router.push('')
-        } catch (error) {
+            router.push(`?${params}`)
+        } catch (error: any) {
             console.log(error);
+            setLoading(false)
+            Swal.fire({
+                icon: "error",
+                text: error?.response?.data?.message
+            })
         }
     }
     return (
@@ -178,6 +190,10 @@ export default function Customer({ table }: any) {
                                 modal.key == "update" &&
                                 <input type="hidden" name="id" value={modal?.data?.id || null} />
                             }
+                            {
+                                modal.key == "update" &&
+                                <input type="hidden" name="email" value={modal?.data?.email || null} />
+                            }
                             {/* <Input label='Nama' placeholder='Masukkan Nama' name='name' defaultValue={modal?.data?.name || ""} required />
                             <Input label='No Telepon' placeholder='Masukkan No Telepon' name='phone' type='number' defaultValue={modal?.data?.phone || ""} required />
                             <Input label='Email' placeholder='Masukkan Email' name='email' type='email' defaultValue={modal?.data?.email || ""} /> */}
@@ -210,9 +226,9 @@ export default function Customer({ table }: any) {
                                 </div>
 
                                 <div>
-                                    <Button color='info' className={'flex gap-2 px-2 items-center justify-center'}>
+                                    <Button disabled={loading} color='info' className={'flex gap-2 px-2 items-center justify-center'}>
                                         <SaveAllIcon className='w-4 h-4' />
-                                        Simpan
+                                        {loading ? "Menyimpan..." : "Simpan"}
                                     </Button>
                                 </div>
 

@@ -4,6 +4,7 @@ import Modal, { useModal } from '@/components/Modal'
 import { CustomTableStyle } from '@/components/table/CustomTableStyle'
 import { CONFIG } from '@/config'
 import { storage } from '@/config/firebase'
+import { queryToUrlSearchParams } from '@/utils'
 import axios from 'axios'
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
 import { PencilIcon, PlusIcon, SaveAllIcon, Trash2Icon, TrashIcon } from 'lucide-react'
@@ -39,6 +40,7 @@ export default function Partner({ table }: any) {
     const [filter, setFilter] = useState<any>()
     const [image, setImage] = useState<any>();
     const [progress, setProgress] = useState<any>();
+    const [loading, setLoading] = useState<boolean>(false)
 
     const handleImage = async (e: any) => {
         if (e.target.files) {
@@ -65,8 +67,11 @@ export default function Partner({ table }: any) {
         }
     }
 
+    const params = queryToUrlSearchParams(router?.query)?.toString();
+
     const onSubmit = async (e: any) => {
         e?.preventDefault();
+        setLoading(true)
         const formData = Object.fromEntries(new FormData(e.target))
         try {
             if (!image) {
@@ -92,10 +97,12 @@ export default function Partner({ table }: any) {
                 icon: "success",
                 text: "Data Berhasil Disimpan"
             })
+            setLoading(false)
             setModal({ ...modal, open: false })
-            router.push('')
+            router.push(`?${params}`)
         } catch (error) {
             console.log(error);
+            setLoading(false)
             Swal.fire({
                 icon: "error",
                 text: "Gagal Menyimpan Data"
@@ -103,8 +110,9 @@ export default function Partner({ table }: any) {
         }
     }
     const onRemove = async (e: any) => {
+        e?.preventDefault();
+        setLoading(true)
         try {
-            e?.preventDefault();
             const formData = Object.fromEntries(new FormData(e.target))
             const result = await axios.delete(CONFIG.base_url_api + `/partner?id=${formData?.id}`, {
                 headers: { "bearer-token": "tokotitohapi" }
@@ -113,11 +121,17 @@ export default function Partner({ table }: any) {
                 icon: "success",
                 text: "Data Berhasil Dihapus"
             })
+            setLoading(false)
             setModal({ ...modal, open: false })
-            router.push('')
+            router.push(`?${params}`)
         }
-        catch (error) {
+        catch (error: any) {
+            setLoading(false)
             console.log(error);
+            Swal.fire({
+                icon: "error",
+                text: error?.response?.data?.message
+            })
         }
     }
     useEffect(() => {
@@ -209,7 +223,7 @@ export default function Partner({ table }: any) {
                         <h2 className='text-xl font-semibold text-center'>{modal.key == 'create' ? "Tambah" : "Ubah"} Mitra</h2>
                         <form onSubmit={onSubmit}>
                             {
-                                modal.key == "update" && 
+                                modal.key == "update" &&
                                 <input type="hidden" name="id" value={modal?.data?.id || null} />
                             }
                             <Input label='Nama Mitra' placeholder='Masukkan Nama Mitra' name='name' defaultValue={modal?.data?.name || ""} required />
@@ -232,9 +246,9 @@ export default function Partner({ table }: any) {
                                 </div>
 
                                 <div>
-                                    <Button color='info' type='submit' className={'flex gap-2 px-2 items-center justify-center'}>
+                                    <Button disabled={loading} color='info' type='submit' className={'flex gap-2 px-2 items-center justify-center'}>
                                         <SaveAllIcon className='w-4 h-4' />
-                                        Simpan
+                                        {loading ? "Menyimpan..." : "Simpan"}
                                     </Button>
                                 </div>
 
@@ -259,9 +273,9 @@ export default function Partner({ table }: any) {
                                 </div>
 
                                 <div>
-                                    <Button type='submit' color='danger' className={'flex gap-2 px-2 items-center justify-center'}>
+                                    <Button disabled={loading} type='submit' color='danger' className={'flex gap-2 px-2 items-center justify-center'}>
                                         <Trash2Icon className='w-4 h-4' />
-                                        Hapus
+                                        {loading ? "Menghapus..." : "Hapus"}
                                     </Button>
                                 </div>
 

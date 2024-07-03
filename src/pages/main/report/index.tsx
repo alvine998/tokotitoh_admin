@@ -4,6 +4,7 @@ import Modal, { useModal } from '@/components/Modal'
 import { CustomTableStyle } from '@/components/table/CustomTableStyle'
 import { CONFIG } from '@/config'
 import { storage } from '@/config/firebase'
+import { queryToUrlSearchParams } from '@/utils'
 import { Textarea } from '@headlessui/react'
 import axios from 'axios'
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
@@ -53,7 +54,7 @@ export default function Category({ table }: any) {
     const [show, setShow] = useState<boolean>(false)
     const [modal, setModal] = useState<useModal>()
     const [filter, setFilter] = useState<any>(router.query)
-
+    const [loading, setLoading] = useState<boolean>(false)
     useEffect(() => {
         if (typeof window !== 'undefined') {
             setShow(true)
@@ -105,9 +106,10 @@ export default function Category({ table }: any) {
             </div>
         },
     ]
-
+    const params = queryToUrlSearchParams(router?.query)?.toString();
     const onSubmit = async (e: any) => {
         e?.preventDefault();
+        setLoading(true)
         const formData = Object.fromEntries(new FormData(e.target))
         try {
             const payload = {
@@ -139,10 +141,12 @@ export default function Category({ table }: any) {
                 icon: "success",
                 text: "Data Berhasil Dikirim"
             })
+            setLoading(false)
             setModal({ ...modal, open: false })
-            router.push('')
+            router.push(`?${params}`)
         } catch (error) {
             console.log(error);
+            setLoading(false)
             Swal.fire({
                 icon: "error",
                 text: "Gagal Data Berhasil Dikirim"
@@ -208,9 +212,9 @@ export default function Category({ table }: any) {
                                     </Button>
                                 </div>
                                 <div>
-                                    <Button color='info' className={'flex gap-2 px-2 items-center justify-center'}>
+                                    <Button disabled={loading} color='info' className={'flex gap-2 px-2 items-center justify-center'}>
                                         <SendIcon className='w-4 h-4' />
-                                        Kirim
+                                        {loading ? "Mengirim..." : "Kirim"}
                                     </Button>
                                 </div>
 

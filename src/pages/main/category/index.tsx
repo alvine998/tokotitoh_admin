@@ -4,12 +4,13 @@ import Modal, { useModal } from '@/components/Modal'
 import { CustomTableStyle } from '@/components/table/CustomTableStyle'
 import { CONFIG } from '@/config'
 import { storage } from '@/config/firebase'
+import { queryToUrlSearchParams } from '@/utils'
 import axios from 'axios'
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
 import { EyeIcon, PencilIcon, PlusIcon, SaveAllIcon, Search, Trash2Icon, TrashIcon } from 'lucide-react'
 import Image from 'next/image'
 import { redirect } from 'next/navigation'
-import { useRouter } from 'next/router'
+import { NextRouter, useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import DataTable from 'react-data-table-component'
 import ReactSelect from 'react-select'
@@ -49,12 +50,13 @@ export async function getServerSideProps(context: any) {
 }
 
 export default function Category({ table }: any) {
-    const router = useRouter();
+    const router: NextRouter = useRouter();
     const [show, setShow] = useState<boolean>(false)
     const [modal, setModal] = useState<useModal>()
     const [filter, setFilter] = useState<any>(router.query)
     const [image, setImage] = useState<any>();
     const [progress, setProgress] = useState<any>();
+    const [loading, setLoading] = useState<boolean>(false)
 
     const handleImage = async (e: any) => {
         if (e.target.files) {
@@ -128,12 +130,15 @@ export default function Category({ table }: any) {
             </div>
         },
     ]
+    const params = queryToUrlSearchParams(router?.query)?.toString();
 
     const onSubmit = async (e: any) => {
         e?.preventDefault();
+        setLoading(true)
         const formData = Object.fromEntries(new FormData(e.target))
         try {
             if (!image) {
+                setLoading(false)
                 return Swal.fire({
                     icon: "error",
                     text: "Icon Wajib Diisi"
@@ -162,17 +167,24 @@ export default function Category({ table }: any) {
                 icon: "success",
                 text: "Data Berhasil Disimpan"
             })
+            setLoading(false)
             setImage(null)
             setProgress(null)
             setModal({ ...modal, open: false })
-            router.push('')
-        } catch (error) {
+            router.push(`?${params}`)
+        } catch (error: any) {
+            setLoading(false)
             console.log(error);
+            Swal.fire({
+                icon: "error",
+                text: error?.response?.data?.message
+            })
         }
     }
     const onRemove = async (e: any) => {
+        e?.preventDefault();
+        setLoading(true)
         try {
-            e?.preventDefault();
             const formData = Object.fromEntries(new FormData(e.target))
             const result = await axios.delete(CONFIG.base_url_api + `/category?id=${formData?.id}`, {
                 headers: {
@@ -184,11 +196,17 @@ export default function Category({ table }: any) {
                 icon: "success",
                 text: "Data Berhasil Dihapus"
             })
+            setLoading(false)
             setModal({ ...modal, open: false })
-            router.push('')
+            router.push(`?${params}`)
         }
-        catch (error) {
+        catch (error: any) {
+            setLoading(false)
             console.log(error);
+            Swal.fire({
+                icon: "error",
+                text: error?.response?.data?.message
+            })
         }
     }
     return (
@@ -261,9 +279,9 @@ export default function Category({ table }: any) {
                                 </div>
 
                                 <div>
-                                    <Button color='info' className={'flex gap-2 px-2 items-center justify-center'}>
+                                    <Button disabled={loading} color='info' className={'flex gap-2 px-2 items-center justify-center'}>
                                         <SaveAllIcon className='w-4 h-4' />
-                                        Simpan
+                                        {loading ? "Menyimpan..." : "Simpan"}
                                     </Button>
                                 </div>
 
@@ -288,9 +306,9 @@ export default function Category({ table }: any) {
                                 </div>
 
                                 <div>
-                                    <Button color='danger' className={'flex gap-2 px-2 items-center justify-center'}>
+                                    <Button disabled={loading} color='danger' className={'flex gap-2 px-2 items-center justify-center'}>
                                         <Trash2Icon className='w-4 h-4' />
-                                        Hapus
+                                        {loading ? "Menghapus..." : "Hapus"}
                                     </Button>
                                 </div>
 

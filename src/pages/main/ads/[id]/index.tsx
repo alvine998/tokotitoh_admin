@@ -33,6 +33,7 @@ export async function getServerSideProps(context: any) {
 export default function Detail({ detail }: any) {
     const router = useRouter();
     const [modal, setModal] = useState<useModal>()
+    const [loading, setLoading] = useState<boolean>(false)
 
 
     const descdata: any = [
@@ -42,19 +43,20 @@ export default function Detail({ detail }: any) {
         { title: "Harga", value: toMoney(detail?.price) },
         { title: "Kategori", value: detail?.category_name },
         { title: "Sub Kategori", value: detail?.subcategory_name },
-        { title: "Brand", value: detail?.brand_name || "-"},
-        { title: "Tipe", value: detail?.type_name || "-"},
-        { title: "Tahun", value: detail?.year || "-"},
+        { title: "Brand", value: detail?.brand_name || "-" },
+        { title: "Tipe", value: detail?.type_name || "-" },
+        { title: "Tahun", value: detail?.year || "-" },
         { title: "Transmisi", value: detail?.transmission || "-" },
         { title: "Trip KM", value: toMoney(detail?.km) || "-" },
         { title: "Aktif Sampai", value: moment(detail?.expired_on).format("DD-MM-YYYY") },
         { title: "Jenis Kepemilikan", value: detail?.ownership || "-" },
-        { title: "Warna", value: detail?.color || "-"},
+        { title: "Warna", value: detail?.color || "-" },
         { title: "Deskripsi", value: detail?.description },
     ]
 
     const onSubmit = async (e: any) => {
         e?.preventDefault();
+        setLoading(true)
         const formData = Object.fromEntries(new FormData(e.target))
         try {
             const payload = {
@@ -72,10 +74,16 @@ export default function Detail({ detail }: any) {
                 icon: "success",
                 text: "Data Berhasil Disimpan"
             })
+            setLoading(false)
             setModal({ ...modal, open: false })
             router.push(`/main/ads/${detail?.id}`)
-        } catch (error) {
+        } catch (error: any) {
+            setLoading(false)
             console.log(error);
+            Swal.fire({
+                icon: "error",
+                text: error?.response?.data?.message
+            })
         }
     }
     return (
@@ -152,13 +160,13 @@ export default function Detail({ detail }: any) {
                             <div>
                                 {
                                     modal.key == "approved" ?
-                                        <Button className={'flex gap-2 px-2 items-center justify-center'}>
+                                        <Button disabled={loading} className={'flex gap-2 px-2 items-center justify-center'}>
                                             <CheckIcon className='w-4 h-4' />
-                                            Verifikasi
+                                            {loading ? "Memverifikasi..." : "Verifikasi"}
                                         </Button> :
-                                        <Button color="danger" className={'flex gap-2 px-2 items-center justify-center'}>
+                                        <Button disabled={loading} color="danger" className={'flex gap-2 px-2 items-center justify-center'}>
                                             <XIcon className='w-4 h-4' />
-                                            Tolak Iklan
+                                            {loading ? "Memproses..." : "Tolak Iklan"}
                                         </Button>
                                 }
                             </div>
