@@ -257,7 +257,7 @@ export default function Category({ table }: any) {
                         <h2 className='text-xl font-semibold text-center'>{modal.key == 'create' ? "Tambah" : "Ubah"} Kategori</h2>
                         <form onSubmit={onSubmit}>
                             <Input label='Nama Kategori' placeholder='Masukkan Nama Kategori' name='name' defaultValue={modal?.data?.name || ""} required />
-                            <Input label='Urutan Tampil' placeholder='Masukkan Urutan Tampil' name='seq' defaultValue={modal?.data?.seq || ""} required />
+                            <Input label='Urutan Tampil' placeholder='Masukkan Urutan Tampil' name='seq' defaultValue={modal?.data?.seq || ""} type="number" required />
                             <Input label='Icon' placeholder='Masukkan icon' type='file' onChange={handleImage} accept='image/*' />
                             {
                                 progress && <p>Progress: {progress}%</p>
