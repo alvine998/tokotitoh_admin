@@ -126,7 +126,7 @@ export default function Detail({ detail }: any) {
             </div>
             <div className='py-4 flex gap-4 items-center overflow-y-auto'>
                 {
-                    detail?.images?.map((val: any, index: number) => (
+                    JSON.parse(detail?.images)?.map((val: any, index: number) => (
                         <Image key={index} layout='relative' width={300} height={300} className='w-full h-[400px]' alt='images' src={val} />
                     ))
                 }
