@@ -66,7 +66,7 @@ export default function Detail({ detail }: any) {
             }
             const payload2 = {
                 title: modal?.key == "approved" ? "Iklan Diterima" : "Iklan Ditolak",
-                content: "Iklan anda telah " + (modal?.key == "approved" ? "diterima" : "ditolak"),
+                content: `Iklan ${modal?.data?.title} telah ` + (modal?.key == "approved" ? "diterima" : "ditolak"),
                 user_id: formData?.user_id
             }
             const result = await axios.patch(CONFIG.base_url_api + `/ads`, payload, {
