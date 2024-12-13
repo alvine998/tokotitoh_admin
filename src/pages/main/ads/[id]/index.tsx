@@ -64,12 +64,24 @@ export default function Detail({ detail }: any) {
                 status: modal?.key == "approved" ? 1 : 2,
                 ...formData
             }
+            const payload2 = {
+                title: modal?.key == "approved" ? "Iklan Diterima" : "Iklan Ditolak",
+                content: "Iklan anda telah " + (modal?.key == "approved" ? "diterima" : "ditolak"),
+                user_id: formData?.user_id
+            }
             const result = await axios.patch(CONFIG.base_url_api + `/ads`, payload, {
                 headers: {
                     "bearer-token": "tokotitohapi",
                     "x-partner-code": "id.marketplace.tokotitoh"
                 }
             })
+            const result2 = await axios.post(CONFIG.base_url_api + `/notification`, payload2, {
+                headers: {
+                    "bearer-token": "tokotitohapi",
+                    "x-partner-code": "id.marketplace.tokotitoh"
+                }
+            })
+
             Swal.fire({
                 icon: "success",
                 text: "Data Berhasil Disimpan"
@@ -147,6 +159,7 @@ export default function Detail({ detail }: any) {
                     <h2 className='text-xl font-semibold text-center'>{modal.key == 'approved' ? `Verifikasi` : `Tolak Pengajuan`} Iklan</h2>
                     <form onSubmit={onSubmit}>
                         <input type="hidden" name="id" value={modal?.data?.id} />
+                        <input type="hidden" name='user_id' value={modal?.data?.user_id} />
                         <p className='text-center my-2'>Apakah anda yakin ingin {modal.key == 'approved' ? "memverifikasi" : "tolak pengajuan"} iklan {modal?.data?.title}?</p>
                         <div className='flex gap-2 lg:flex-row flex-col-reverse justify-end'>
                             <div>
