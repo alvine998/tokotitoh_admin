@@ -135,6 +135,16 @@ export default function Detail({ detail }: any) {
                     ) : ""
                 }
 
+{
+                    detail?.status == 1 ? (
+                        <div className='flex gap-2'>
+                            <Button type='button' onClick={() => {
+                                setModal({ ...modal, open: true, data: detail, key: "rejected" })
+                            }} className={"p-2 flex items-center gap-2"} color='danger'><XIcon /> Non Aktifkan</Button>
+                        </div>
+                    ) : ""
+                }
+
             </div>
             <div className='py-4 flex gap-4 items-center overflow-y-auto'>
                 {
