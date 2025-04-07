@@ -46,7 +46,7 @@ export default function NavbarDesktop({
     },
     {
       name: "Iklan",
-      href: `/main/ads`,
+      href: `/main/ads/waiting`,
       icon: <Building2Icon />,
     },
     session?.role !== "admin" && {
@@ -80,7 +80,7 @@ export default function NavbarDesktop({
         <Menu>
           <MenuButton className={"flex gap-2 items-center"}>
             <p className="text-white">
-              {session?.name?.toUpperCase() || ""}
+              Admin
             </p>
             <ChevronDownCircle color="white" className="w-4" />
           </MenuButton>

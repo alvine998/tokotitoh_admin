@@ -103,7 +103,7 @@ export default function Detail({ detail }: any) {
             <div className='flex'>
                 <div>
                     <Button type='button' className={'flex gap-2'} color='white' onClick={() => {
-                        router.push('/main/ads')
+                        router.push('/main/ads/waiting')
                     }}>
                         <ChevronLeft />
                         Kembali
@@ -149,7 +149,7 @@ export default function Detail({ detail }: any) {
             <div className='py-4 flex gap-4 items-center overflow-y-auto'>
                 {
                     JSON.parse(detail?.images)?.map((val: any, index: number) => (
-                        <Image key={index} layout='relative' width={300} height={300} className='w-full h-[400px]' alt='images' src={val} />
+                        <Image key={index} layout='relative' width={300} height={300} className='w-1/4 h-[300px]' alt='images' src={val} />
                     ))
                 }
             </div>

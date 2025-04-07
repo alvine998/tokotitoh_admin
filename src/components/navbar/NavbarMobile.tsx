@@ -46,7 +46,7 @@ export default function NavbarMobile({
     },
     {
       name: "Iklan",
-      href: `/main/ads`,
+      href: `/main/ads/waiting`,
       icon: <Building2Icon />,
     },
     session?.role !== "admin" && {
