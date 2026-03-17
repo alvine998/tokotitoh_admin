@@ -21,7 +21,7 @@ export default function Login() {
       const payload = {
         ...formData
       }
-      const result = await axios.post(CONFIG.base_url_api + '/user/login', payload, {
+      const result = await axios.post(CONFIG.base_url_api + '/user/admin/login', payload, {
         headers: {
           "bearer-token": "tokotitohapi",
           "x-partner-code": "id.marketplace.tokotitoh"
