@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Shell(npx tsc --noEmit -p tsconfig.json 2 >& 1)",
+      "Shell(npm:*)",
+      "Shell(npx next build 2 >& 1)"
+    ],
+    "deny": [],
+    "defaultMode": "default"
+  }
+}
