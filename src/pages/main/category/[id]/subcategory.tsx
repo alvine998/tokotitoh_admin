@@ -7,17 +7,16 @@ import { CONFIG } from "@/config";
 import { queryToUrlSearchParams } from "@/utils";
 import axios from "axios";
 import {
-  EyeIcon,
   PencilIcon,
   PlusIcon,
   SaveAllIcon,
+  Search,
   Trash2Icon,
   TrashIcon,
 } from "lucide-react";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
-import ReactSelect from "react-select";
 import Swal from "sweetalert2";
 
 export async function getServerSideProps(context: any) {
@@ -69,8 +68,9 @@ export default function PropertyRoomType({ id, table, detail }: any) {
       setShow(true);
     }
   }, []);
+
   const Column: any = [
-     {
+    {
       name: "No",
       sortable: true,
       selector: (row: any) => row?.index || "-",
@@ -81,39 +81,40 @@ export default function PropertyRoomType({ id, table, detail }: any) {
       selector: (row: any) => row?.name,
     },
     {
+      name: "Urutan",
+      sortable: true,
+      selector: (row: any) => row?.index || "-",
+    },
+    {
       name: "Aksi",
-      selector: (row: any) => (
-        <div className="flex gap-2 flex-row">
-          <Button
+      right: true,
+      cell: (row: any) => (
+        <div className="flex gap-1">
+          <button
+            type="button"
             title="Edit"
-            color="primary"
-            type="button"
-            onClick={() => {
-              setModal({ ...modal, open: true, data: row, key: "update" });
-            }}
+            onClick={() =>
+              setModal({ ...modal, open: true, data: row, key: "update" })
+            }
+            className="p-2 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
           >
-            <PencilIcon className="text-white w-5 h-5" />
-          </Button>
-          <Button
+            <PencilIcon className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
             title="Hapus"
-            color="danger"
-            type="button"
-            onClick={() => {
-              setModal({ ...modal, open: true, data: row, key: "delete" });
-            }}
+            onClick={() =>
+              setModal({ ...modal, open: true, data: row, key: "delete" })
+            }
+            className="p-2 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
           >
-            <TrashIcon className="text-white w-5 h-5" />
-          </Button>
+            <TrashIcon className="w-4 h-4" />
+          </button>
         </div>
       ),
     },
   ];
 
-  const types = [
-    { value: "homestay", label: "Homestay" },
-    { value: "hotel", label: "Hotel" },
-    { value: "villa", label: "Villa" },
-  ];
   const params = queryToUrlSearchParams(router?.query)?.toString();
 
   useEffect(() => {
@@ -131,50 +132,36 @@ export default function PropertyRoomType({ id, table, detail }: any) {
         category_id: id,
       };
       if (formData?.id) {
-        const result = await axios.patch(
-          CONFIG.base_url_api + `/subcategory`,
-          payload,
-          {
-            headers: {
-              "bearer-token": "tokotitohapi",
-              "x-partner-code": "id.marketplace.tokotitoh",
-            },
-          }
-        );
+        await axios.patch(CONFIG.base_url_api + `/subcategory`, payload, {
+          headers: {
+            "bearer-token": "tokotitohapi",
+            "x-partner-code": "id.marketplace.tokotitoh",
+          },
+        });
       } else {
-        const result = await axios.post(
-          CONFIG.base_url_api + `/subcategory`,
-          payload,
-          {
-            headers: {
-              "bearer-token": "tokotitohapi",
-              "x-partner-code": "id.marketplace.tokotitoh",
-            },
-          }
-        );
+        await axios.post(CONFIG.base_url_api + `/subcategory`, payload, {
+          headers: {
+            "bearer-token": "tokotitohapi",
+            "x-partner-code": "id.marketplace.tokotitoh",
+          },
+        });
       }
       setLoading(false);
-      Swal.fire({
-        icon: "success",
-        text: "Data Berhasil Disimpan",
-      });
+      Swal.fire({ icon: "success", text: "Data Berhasil Disimpan" });
       setModal({ ...modal, open: false });
       router.push(`/main/category/${id}/subcategory?${params}`);
     } catch (error: any) {
       setLoading(false);
-      console.log(error);
-      Swal.fire({
-        icon: "error",
-        text: error?.response?.data?.message,
-      });
+      Swal.fire({ icon: "error", text: error?.response?.data?.message });
     }
   };
+
   const onRemove = async (e: any) => {
     e?.preventDefault();
     setLoading(true);
     try {
       const formData = Object.fromEntries(new FormData(e.target));
-      const result = await axios.delete(
+      await axios.delete(
         CONFIG.base_url_api + `/subcategory?id=${formData?.id}`,
         {
           headers: {
@@ -183,180 +170,147 @@ export default function PropertyRoomType({ id, table, detail }: any) {
           },
         }
       );
-      Swal.fire({
-        icon: "success",
-        text: "Data Berhasil Dihapus",
-      });
+      Swal.fire({ icon: "success", text: "Data Berhasil Dihapus" });
       setLoading(false);
       setModal({ ...modal, open: false });
       router.push(`/main/category/${id}/subcategory?${params}`);
     } catch (error: any) {
       setLoading(false);
-      console.log(error);
-      Swal.fire({
-        icon: "error",
-        text: error?.response?.data?.message,
-      });
+      Swal.fire({ icon: "error", text: error?.response?.data?.message });
     }
   };
 
   return (
     <PropertyTabs id={id} detail={detail}>
-      <h2 className="text-2xl font-semibold">Sub Kategori</h2>
-
-      <div className="mt-5">
-        <div className="flex lg:flex-row flex-col justify-between items-center">
-          <div className="lg:w-auto w-full">
-            <Input
-              label=""
+      <div className="bg-white rounded-xl border border-gray-200">
+        <div className="flex items-center justify-between gap-4 p-4 border-b border-gray-100">
+          <div className="relative w-full max-w-xs">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
               type="search"
+              placeholder="Cari sub kategori..."
               defaultValue={filter?.search}
-              placeholder="Cari disini..."
-              onChange={(e) => {
-                setFilter({ ...filter, search: e.target.value });
-              }}
+              onChange={(e) => setFilter({ ...filter, search: e.target.value })}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
-          <div className="lg:w-auto w-full">
-            <Button
-              type="button"
-              color="info"
-              className={
-                "flex gap-2 px-2 items-center lg:justify-start justify-center"
-              }
-              onClick={() => {
-                setModal({ ...modal, open: true, data: null, key: "create" });
-              }}
-            >
-              <PlusIcon className="w-4" />
-              Sub Kategori
-            </Button>
-          </div>
+          <Button
+            type="button"
+            color="info"
+            size="auto"
+            className="flex gap-2 px-4 py-2 items-center"
+            onClick={() =>
+              setModal({ ...modal, open: true, data: null, key: "create" })
+            }
+          >
+            <PlusIcon className="w-4 h-4" />
+            Tambah Sub Kategori
+          </Button>
         </div>
-        <div className="mt-5">
+        <div className="p-4">
           {show && (
             <DataTable
               pagination
-              onChangePage={(pageData) => {
-                setFilter({ ...filter, page: pageData });
-              }}
-              onChangeRowsPerPage={(currentRow, currentPage) => {
-                setFilter({ ...filter, page: currentPage, size: currentRow });
-              }}
+              onChangePage={(pageData) =>
+                setFilter({ ...filter, page: pageData })
+              }
+              onChangeRowsPerPage={(currentRow, currentPage) =>
+                setFilter({ ...filter, page: currentPage, size: currentRow })
+              }
               responsive={true}
               paginationTotalRows={table?.items?.count}
               paginationDefaultPage={1}
               paginationServer={true}
-              striped
               columns={Column}
               data={table?.items?.rows}
               customStyles={CustomTableStyle}
             />
           )}
         </div>
-
-        {modal?.key == "create" || modal?.key == "update" ? (
-          <Modal
-            open={modal.open}
-            setOpen={() => setModal({ ...modal, open: false })}
-          >
-            <h2 className="text-xl font-semibold text-center">
-              {modal.key == "create" ? "Tambah" : "Ubah"} Sub Kategori
-            </h2>
-            <form onSubmit={onSubmit}>
-              <Input
-                label="Nama Sub Kategori"
-                autoFocus
-                placeholder="Masukkan Nama Sub Kategori"
-                name="name"
-                defaultValue={modal?.data?.name || ""}
-                required
-              />
-              <Input
-                label="Urutan"
-                placeholder="Masukkan Urutan"
-                name="index"
-                defaultValue={modal?.data?.index || ""}
-              />
-              {modal.key == "update" && (
-                <input
-                  type="hidden"
-                  name="id"
-                  value={modal?.data?.id || null}
-                />
-              )}
-              <div className="flex lg:gap-2 gap-0 lg:flex-row flex-col-reverse justify-end">
-                <div>
-                  <Button
-                    color="white"
-                    type="button"
-                    onClick={() => {
-                      setModal({ open: false });
-                    }}
-                  >
-                    Kembali
-                  </Button>
-                </div>
-
-                <div>
-                  <Button
-                    disabled={loading}
-                    color="info"
-                    className={"flex gap-2 px-2 items-center justify-center"}
-                  >
-                    <SaveAllIcon className="w-4 h-4" />
-                    {loading ? "Menyimpan..." : "Simpan"}
-                  </Button>
-                </div>
-              </div>
-            </form>
-          </Modal>
-        ) : (
-          ""
-        )}
-        {modal?.key == "delete" ? (
-          <Modal
-            open={modal.open}
-            setOpen={() => setModal({ ...modal, open: false })}
-          >
-            <h2 className="text-xl font-semibold text-center">
-              Hapus Sub Kategori
-            </h2>
-            <form onSubmit={onRemove}>
-              <input type="hidden" name="id" value={modal?.data?.id} />
-              <p className="text-center my-2">
-                Apakah anda yakin ingin menghapus data {modal?.data?.name}?
-              </p>
-              <div className="flex lg:gap-2 gap-0 lg:flex-row flex-col-reverse justify-end">
-                <div>
-                  <Button
-                    color="white"
-                    type="button"
-                    onClick={() => {
-                      setModal({ open: false });
-                    }}
-                  >
-                    Kembali
-                  </Button>
-                </div>
-
-                <div>
-                  <Button
-                    disabled={loading}
-                    color="danger"
-                    className={"flex gap-2 px-2 items-center justify-center"}
-                  >
-                    <Trash2Icon className="w-4 h-4" />
-                    {loading ? "Menghapus..." : "Hapus"}
-                  </Button>
-                </div>
-              </div>
-            </form>
-          </Modal>
-        ) : (
-          ""
-        )}
       </div>
+
+      {(modal?.key == "create" || modal?.key == "update") && (
+        <Modal
+          open={modal.open}
+          setOpen={() => setModal({ ...modal, open: false })}
+        >
+          <h2 className="text-xl font-semibold text-center">
+            {modal.key == "create" ? "Tambah" : "Ubah"} Sub Kategori
+          </h2>
+          <form onSubmit={onSubmit} className="mt-4 space-y-4">
+            <Input
+              label="Nama Sub Kategori"
+              autoFocus
+              placeholder="Masukkan Nama Sub Kategori"
+              name="name"
+              defaultValue={modal?.data?.name || ""}
+              required
+            />
+            <Input
+              label="Urutan"
+              placeholder="Masukkan Urutan"
+              name="index"
+              defaultValue={modal?.data?.index || ""}
+              type="number"
+            />
+            {modal.key == "update" && (
+              <input type="hidden" name="id" value={modal?.data?.id || null} />
+            )}
+            <div className="flex justify-end gap-3 pt-4 border-t">
+              <Button
+                color="white"
+                type="button"
+                onClick={() => setModal({ open: false })}
+              >
+                Kembali
+              </Button>
+              <Button
+                disabled={loading}
+                color="info"
+                className="flex gap-2 px-4 py-2 items-center"
+              >
+                <SaveAllIcon className="w-4 h-4" />
+                {loading ? "Menyimpan..." : "Simpan"}
+              </Button>
+            </div>
+          </form>
+        </Modal>
+      )}
+
+      {modal?.key == "delete" && (
+        <Modal
+          open={modal.open}
+          setOpen={() => setModal({ ...modal, open: false })}
+        >
+          <h2 className="text-xl font-semibold text-center">
+            Hapus Sub Kategori
+          </h2>
+          <form onSubmit={onRemove} className="mt-4">
+            <input type="hidden" name="id" value={modal?.data?.id} />
+            <p className="text-center my-4 text-gray-600">
+              Apakah anda yakin ingin menghapus data{" "}
+              <strong>{modal?.data?.name}</strong>?
+            </p>
+            <div className="flex justify-end gap-3 pt-4 border-t">
+              <Button
+                color="white"
+                type="button"
+                onClick={() => setModal({ open: false })}
+              >
+                Kembali
+              </Button>
+              <Button
+                disabled={loading}
+                color="danger"
+                className="flex gap-2 px-4 py-2 items-center"
+              >
+                <Trash2Icon className="w-4 h-4" />
+                {loading ? "Menghapus..." : "Hapus"}
+              </Button>
+            </div>
+          </form>
+        </Modal>
+      )}
     </PropertyTabs>
   );
 }

@@ -174,7 +174,7 @@ export default function Detail({ detail }: any) {
               <button
                 type="button"
                 onClick={() => setModal({ open: true, data: detail, key: "approved" })}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-green-700 rounded-lg hover:bg-green-600 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[#1e3a5f] rounded-lg hover:bg-[#2a4a73] transition-colors"
               >
                 <Check className="w-4 h-4" />
                 Terima
@@ -217,6 +217,8 @@ export default function Detail({ detail }: any) {
               alt="Foto utama"
               src={images[0]}
               fill
+              priority
+              sizes="(max-width: 640px) 100vw, 800px"
               className="object-cover transition-transform duration-300 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
@@ -235,13 +237,14 @@ export default function Detail({ detail }: any) {
                   type="button"
                   onClick={() => openLightbox(index)}
                   className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-colors ${
-                    index === 0 ? "border-green-600" : "border-transparent hover:border-gray-300"
+                    index === 0 ? "border-[#1e3a5f]" : "border-transparent hover:border-gray-300"
                   }`}
                 >
                   <Image
                     alt={`Thumbnail ${index + 1}`}
                     src={url}
                     fill
+                    sizes="(max-width: 640px) 25vw, 120px"
                     className="object-cover"
                   />
                 </button>
@@ -288,6 +291,8 @@ export default function Detail({ detail }: any) {
               src={images[lightbox]}
               width={1200}
               height={900}
+              sizes="100vw"
+              priority
               className="max-w-full max-h-[85vh] object-contain rounded-lg"
             />
           </div>
@@ -354,7 +359,7 @@ export default function Detail({ detail }: any) {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-green-700 rounded-lg hover:bg-green-600 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[#1e3a5f] rounded-lg hover:bg-[#2a4a73] disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
                   >
                     {loading ? (
                       <>

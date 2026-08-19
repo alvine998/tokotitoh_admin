@@ -62,13 +62,13 @@ export default function NavbarMobile({
         <div className="flex items-center gap-3">
           <Image
             alt="logo"
-            src="/images/tokotitoh.png"
+            src="/images/tokonyang.png"
             width={32}
             height={32}
             className="w-8 h-8"
           />
           <span className="text-base font-bold text-gray-900 tracking-tight">
-            TOKOTITOH
+            TOKONYANG
           </span>
         </div>
         <button
@@ -90,13 +90,13 @@ export default function NavbarMobile({
             onClick={() => setOpen(false)}
           />
           {/* Drawer */}
-          <aside className="fixed left-0 top-0 h-full w-64 bg-green-700 z-40 flex flex-col">
+          <aside className="fixed left-0 top-0 h-full w-64 bg-[#1e3a5f] z-40 flex flex-col">
             {/* Brand */}
-            <div className="flex items-center justify-between px-5 h-16 border-b border-green-600/50">
+            <div className="flex items-center justify-between px-5 h-16 border-b border-white/10">
               <div className="flex items-center gap-3">
                 <Image
                   alt="logo"
-                  src="/images/tokotitoh.png"
+                  src="/images/tokonyang.png"
                   width={32}
                   height={32}
                   className="w-8 h-8"
@@ -108,7 +108,7 @@ export default function NavbarMobile({
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="p-1.5 rounded-lg text-green-200 hover:text-white hover:bg-white/10 transition-colors"
+                className="p-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 transition-colors"
                 aria-label="Tutup menu"
               >
                 <X className="w-5 h-5" />
@@ -132,7 +132,7 @@ export default function NavbarMobile({
                       ${
                         active
                           ? "bg-white/15 text-white"
-                          : "text-green-100 hover:bg-white/10 hover:text-white"
+                          : "text-slate-300 hover:bg-white/10 hover:text-white"
                       }`}
                   >
                     <Icon className="w-[18px] h-[18px] shrink-0" />
@@ -143,11 +143,11 @@ export default function NavbarMobile({
             </nav>
 
             {/* Logout */}
-            <div className="px-3 py-4 border-t border-green-600/50">
+            <div className="px-3 py-4 border-t border-white/10">
               <button
                 type="button"
                 onClick={handleLogout}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-green-200 hover:bg-white/10 hover:text-white transition-colors duration-150"
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:bg-white/10 hover:text-white transition-colors duration-150"
               >
                 <DoorOpenIcon className="w-[18px] h-[18px] shrink-0" />
                 <span>Logout</span>

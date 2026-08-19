@@ -79,18 +79,18 @@ export default function NavbarDesktop({
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
-      <aside className="fixed left-0 top-0 h-screen w-60 bg-green-700 flex flex-col z-30">
+      <aside className="fixed left-0 top-0 h-screen w-60 bg-[#1e3a5f] flex flex-col z-30">
         {/* Brand */}
-        <div className="flex items-center gap-3 px-5 h-16 border-b border-green-600/50">
+        <div className="flex items-center gap-3 px-5 h-16 border-b border-white/10">
           <Image
             alt="logo"
-            src="/images/tokotitoh.png"
+            src="/images/tokonyang.png"
             width={36}
             height={36}
             className="w-9 h-9"
           />
           <span className="text-white font-bold text-lg tracking-tight">
-            TOKOTITOH
+            TOKONYANG
           </span>
         </div>
 
@@ -108,7 +108,7 @@ export default function NavbarDesktop({
                   ${
                     active
                       ? "bg-white/15 text-white"
-                      : "text-green-100 hover:bg-white/10 hover:text-white"
+                      : "text-slate-300 hover:bg-white/10 hover:text-white"
                   }`}
               >
                 <Icon className="w-[18px] h-[18px] shrink-0" />
@@ -119,11 +119,11 @@ export default function NavbarDesktop({
         </nav>
 
         {/* Sidebar footer - logout */}
-        <div className="px-3 py-4 border-t border-green-600/50">
+        <div className="px-3 py-4 border-t border-white/10">
           <button
             type="button"
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-green-200 hover:bg-white/10 hover:text-white transition-colors duration-150"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:bg-white/10 hover:text-white transition-colors duration-150"
           >
             <LogOut className="w-[18px] h-[18px] shrink-0" />
             <span>Logout</span>
@@ -138,7 +138,7 @@ export default function NavbarDesktop({
           <div />
           <Menu>
             <MenuButton className="flex items-center gap-2 rounded-lg hover:bg-gray-50 px-3 py-1.5 transition-colors">
-              <div className="w-8 h-8 rounded-full bg-green-100 text-green-700 flex items-center justify-center text-sm font-semibold">
+              <div className="w-8 h-8 rounded-full bg-[#1e3a5f]/10 text-[#1e3a5f] flex items-center justify-center text-sm font-semibold">
                 {session?.name?.[0]?.toUpperCase() || "A"}
               </div>
               <span className="text-sm font-medium text-gray-700">

@@ -32,7 +32,7 @@ export default function LayoutDashboard({ children }: { children: ReactNode }) {
         return (
             <section className='min-h-screen bg-gray-100'>
                 <Head>
-                    <title>Dashboard - Tokotitoh</title>
+                    <title>Dashboard - Tokonyang</title>
                 </Head>
             </section>
         )
@@ -41,7 +41,7 @@ export default function LayoutDashboard({ children }: { children: ReactNode }) {
     return (
         <section className='min-h-screen overflow-x-hidden relative'>
             <Head>
-                <title>Dashboard - Tokotitoh</title>
+                <title>Dashboard - Tokonyang</title>
             </Head>
             <div className='lg:block hidden'>
                 <NavbarDesktop session={sessionData}>

@@ -12,7 +12,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
   return router.pathname?.includes('/main') || router.pathname?.includes('/404') ?
     <RootLayout>
-      <NextNProgress color="#fff" nonce="my-nonce" />
+      <NextNProgress color="#1e3a5f" height={3} showOnShallow options={{ showSpinner: false }} />
       <LayoutDashboard>
         <Component {...pageProps} />
       </LayoutDashboard>

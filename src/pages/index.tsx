@@ -41,30 +41,30 @@ export default function Login() {
   return (
     <div className='min-h-screen lg:flex'>
       <Head>
-        <title>Login Admin - Tokotitoh</title>
+        <title>Login Admin - Tokonyang</title>
       </Head>
 
       {/* Brand panel - left */}
-      <div className='relative w-full bg-green-600 lg:w-[45%] lg:flex lg:flex-col lg:justify-between lg:p-12 hidden lg:block overflow-hidden'>
+      <div className='relative w-full bg-[#1e3a5f] lg:w-[45%] lg:flex lg:flex-col lg:justify-between lg:p-12 hidden lg:block overflow-hidden'>
         {/* Decorative blobs */}
         <div className='absolute -top-24 -right-24 w-96 h-96 rounded-full bg-white/10' />
-        <div className='absolute -bottom-32 -left-16 w-[28rem] h-[28rem] rounded-full bg-green-800/30' />
-        <div className='absolute top-1/2 left-1/3 w-40 h-40 rounded-full bg-green-300/20 blur-2xl' />
+        <div className='absolute -bottom-32 -left-16 w-[28rem] h-[28rem] rounded-full bg-[#132a45]/50' />
+        <div className='absolute top-1/2 left-1/3 w-40 h-40 rounded-full bg-blue-400/10 blur-2xl' />
 
         <div className='relative'>
-          <Image alt='icon-logo' src={'/images/tokotitoh.png'} width={100} height={100} className='w-20 h-20' />
+          <Image alt='icon-logo' src={'/images/tokonyang.png'} width={100} height={100} className='w-20 h-20' />
         </div>
 
         <div className='relative space-y-6'>
           <h2 className='text-white font-bold text-4xl leading-tight'>Selamat datang kembali</h2>
-          <p className='text-green-100 text-lg max-w-md leading-relaxed'>
+          <p className='text-slate-300 text-lg max-w-md leading-relaxed'>
             Kelola toko, produk, dan pelanggan Anda dari satu tempat.
           </p>
         </div>
 
-        <div className='relative flex items-center gap-3 text-green-100/80 text-sm'>
-          <span className='w-px h-10 bg-green-300/40' />
-          <p className='max-w-xs' suppressHydrationWarning>Tokotitoh Admin &copy; {new Date().getFullYear()}</p>
+        <div className='relative flex items-center gap-3 text-slate-400 text-sm'>
+          <span className='w-px h-10 bg-white/20' />
+          <p className='max-w-xs' suppressHydrationWarning>Tokonyang Admin &copy; {new Date().getFullYear()}</p>
         </div>
       </div>
 
@@ -73,7 +73,7 @@ export default function Login() {
         <div className='w-full max-w-md'>
           {/* Mobile brand */}
           <div className='lg:hidden flex flex-col items-center mb-8'>
-            <Image alt='icon-logo' src={'/images/tokotitoh.png'} width={72} height={72} className='w-18 h-18' />
+            <Image alt='icon-logo' src={'/images/tokonyang.png'} width={72} height={72} className='w-18 h-18' />
             <h1 className='mt-4 text-2xl font-bold text-gray-900'>Selamat datang kembali</h1>
             <p className='mt-1 text-sm text-gray-500'>Masuk untuk mengelola toko Anda</p>
           </div>
@@ -105,7 +105,7 @@ export default function Login() {
                   autoComplete='username'
                   placeholder='Masukkan email atau no telepon'
                   required
-                  className='w-full rounded-lg border border-gray-300 bg-white py-2.5 pl-10 pr-3.5 text-sm text-gray-900 placeholder:text-gray-400 focus:border-green-600 focus:ring-2 focus:ring-green-600/20 focus:outline-none transition'
+                  className='w-full rounded-lg border border-gray-300 bg-white py-2.5 pl-10 pr-3.5 text-sm text-gray-900 placeholder:text-gray-400 focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 focus:outline-none transition'
                 />
               </div>
             </div>
@@ -115,7 +115,7 @@ export default function Login() {
                 <label htmlFor='password' className='block text-sm font-medium text-gray-700'>
                   Password
                 </label>
-                {/* <a href='#' className='text-sm text-green-700 hover:text-green-800 font-medium'>
+                {/* <a href='#' className='text-sm text-[#1e3a5f] hover:text-[#132a45] font-medium'>
                   Lupa Password?
                 </a> */}
               </div>
@@ -128,7 +128,7 @@ export default function Login() {
                   autoComplete='current-password'
                   placeholder='Masukkan password'
                   required
-                  className='w-full rounded-lg border border-gray-300 bg-white py-2.5 pl-10 pr-11 text-sm text-gray-900 placeholder:text-gray-400 focus:border-green-600 focus:ring-2 focus:ring-green-600/20 focus:outline-none transition'
+                  className='w-full rounded-lg border border-gray-300 bg-white py-2.5 pl-10 pr-11 text-sm text-gray-900 placeholder:text-gray-400 focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 focus:outline-none transition'
                 />
                 <button
                   type='button'
@@ -144,7 +144,7 @@ export default function Login() {
             <button
               type='submit'
               disabled={loading}
-              className='mt-2 w-full rounded-lg bg-green-700 hover:bg-green-600 active:bg-green-800 disabled:opacity-60 disabled:cursor-not-allowed py-2.5 text-sm font-semibold text-white transition flex items-center justify-center gap-2'
+              className='mt-2 w-full rounded-lg bg-[#1e3a5f] hover:bg-[#2a4a73] active:bg-[#132a45] disabled:opacity-60 disabled:cursor-not-allowed py-2.5 text-sm font-semibold text-white transition flex items-center justify-center gap-2'
             >
               {loading ? (
                 <>
@@ -158,7 +158,7 @@ export default function Login() {
           </form>
 
           <p className='mt-6 text-center text-xs text-gray-400' suppressHydrationWarning>
-            &copy; {new Date().getFullYear()} Tokotitoh. Semua hak dilindungi.
+            &copy; 2024 Tokonyang. Semua hak dilindungi.
           </p>
         </div>
       </div>

@@ -286,7 +286,7 @@ export default function Customer({ table, session }: any) {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-green-700 rounded-lg hover:bg-green-600 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[#1e3a5f] rounded-lg hover:bg-[#2a4a73] disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
                 >
                   {loading ? (
                     <>

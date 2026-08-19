@@ -8,6 +8,7 @@ const nextConfig = {
         hostname: "**",
       },
     ],
+    formats: ["image/avif", "image/webp"],
   },
   env: {
     BASE_URL_API_TOKOTITOH: 'https://api.tokonyang.com'

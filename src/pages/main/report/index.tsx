@@ -3,29 +3,17 @@ import Input from "@/components/Input";
 import Modal, { useModal } from "@/components/Modal";
 import { CustomTableStyle } from "@/components/table/CustomTableStyle";
 import { CONFIG } from "@/config";
-import { storage } from "@/config/firebase";
 import { queryToUrlSearchParams } from "@/utils";
-import { Textarea } from "@headlessui/react";
 import axios from "axios";
-import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import {
-  EyeIcon,
-  PencilIcon,
-  PlusIcon,
   ReplyIcon,
-  SaveAllIcon,
   Search,
   SendIcon,
-  Trash2Icon,
-  TrashIcon,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
-import ReactSelect from "react-select";
 import Swal from "sweetalert2";
 
 export async function getServerSideProps(context: any) {
@@ -87,7 +75,7 @@ export default function Category({ table }: any) {
       sortable: true,
       selector: (row: any) => (
         <Link
-          className="text-blue-500"
+          className="text-blue-500 hover:underline"
           href={`/main/ads/${row?.ads_id}`}
           target="_blank"
         >
@@ -108,13 +96,11 @@ export default function Category({ table }: any) {
     {
       name: "Deskripsi",
       sortable: true,
-      selector: (row: any) => (
+      cell: (row: any) => (
         <button
-          className="text-blue-500"
+          className="text-blue-500 hover:underline"
           type="button"
-          onClick={() => {
-            setModal({ ...modal, open: true, data: row, key: "desc" });
-          }}
+          onClick={() => setModal({ ...modal, open: true, data: row, key: "desc" })}
         >
           Lihat
         </button>
@@ -123,26 +109,26 @@ export default function Category({ table }: any) {
     {
       name: "Status",
       sortable: true,
-      selector: (row: any) =>
-        row?.status == 1 ? "Sudah Dibalas" : "Menunggu Tanggapan",
+      cell: (row: any) => (
+        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${row?.status == 1 ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"}`}>
+          {row?.status == 1 ? "Sudah Dibalas" : "Menunggu Tanggapan"}
+        </span>
+      ),
     },
     {
       name: "Aksi",
-      selector: (row: any) => (
-        <div className="flex gap-2 flex-row">
-          {row?.status == 0 ? (
-            <Button
-              title="Edit"
-              color="primary"
+      right: true,
+      cell: (row: any) => (
+        <div className="flex gap-1">
+          {row?.status == 0 && (
+            <button
               type="button"
-              onClick={() => {
-                setModal({ ...modal, open: true, data: row, key: "update" });
-              }}
+              title="Balas"
+              onClick={() => setModal({ ...modal, open: true, data: row, key: "update" })}
+              className="p-2 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
             >
-              <ReplyIcon className="text-white w-5 h-5" />
-            </Button>
-          ) : (
-            ""
+              <ReplyIcon className="w-4 h-4" />
+            </button>
           )}
         </div>
       ),
@@ -201,122 +187,87 @@ export default function Category({ table }: any) {
   };
 
   return (
-    <div>
-      <h2 className="text-2xl font-semibold">Laporan</h2>
+    <div className="space-y-5">
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900">Laporan</h1>
+        <p className="mt-1 text-sm text-gray-500">Kelola laporan dari pengguna.</p>
+      </div>
 
-      <div className="mt-5">
-        <div className="flex lg:flex-row flex-col justify-between items-center">
-          <div className="lg:w-auto w-full">
-            <Input
-              label=""
+      <div className="bg-white rounded-xl border border-gray-200">
+        <div className="flex items-center justify-between gap-4 p-4 border-b border-gray-100">
+          <div className="relative w-full max-w-xs">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
               type="search"
-              placeholder="Cari disini..."
+              placeholder="Cari laporan..."
               defaultValue={filter?.search}
-              onChange={(e) => {
-                setFilter({ ...filter, search: e.target.value });
-              }}
+              onChange={(e) => setFilter({ ...filter, search: e.target.value })}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
         </div>
-        <div className="mt-5">
+        <div className="p-4">
           {show && (
             <DataTable
               pagination
-              onChangePage={(pageData) => {
-                setFilter({ ...filter, page: pageData });
-              }}
-              onChangeRowsPerPage={(currentRow, currentPage) => {
-                setFilter({ ...filter, page: currentPage, size: currentRow });
-              }}
+              onChangePage={(pageData) => setFilter({ ...filter, page: pageData })}
+              onChangeRowsPerPage={(currentRow, currentPage) => setFilter({ ...filter, page: currentPage, size: currentRow })}
               responsive={true}
               paginationTotalRows={table?.items?.count}
               paginationDefaultPage={1}
               paginationServer={true}
-              striped
               columns={Column}
               data={table?.items?.rows}
               customStyles={CustomTableStyle}
             />
           )}
         </div>
-
-        {modal?.key == "create" || modal?.key == "update" ? (
-          <Modal
-            open={modal.open}
-            setOpen={() => setModal({ ...modal, open: false })}
-          >
-            <h2 className="text-xl font-semibold text-center">Balas Laporan</h2>
-            <form onSubmit={onSubmit}>
-              <Input
-                label="Judul"
-                name="title"
-                placeholder="Masukkan judul balasan"
-                required
-              />
-              <Textarea
-                className="block w-full rounded-md border-0 py-1.5 pl-4 pr-2 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 focus:outline-none sm:text-sm sm:leading-6 my-4"
-                name="content"
-                placeholder="Ketik Disini..."
-                required
-              />
-              <input type="hidden" name="status" value={1} />
-              <input type="hidden" name="user_id" value={modal.data.user_id} />
-              <input type="hidden" name="id" value={modal.data.id} />
-              <div className="flex lg:gap-2 gap-0 lg:flex-row flex-col-reverse justify-end">
-                <div>
-                  <Button
-                    color="white"
-                    type="button"
-                    onClick={() => {
-                      setModal({ open: false });
-                    }}
-                  >
-                    Kembali
-                  </Button>
-                </div>
-                <div>
-                  <Button
-                    disabled={loading}
-                    color="info"
-                    className={"flex gap-2 px-2 items-center justify-center"}
-                  >
-                    <SendIcon className="w-4 h-4" />
-                    {loading ? "Mengirim..." : "Kirim"}
-                  </Button>
-                </div>
-              </div>
-            </form>
-          </Modal>
-        ) : (
-          ""
-        )}
-        {modal?.key == "desc" ? (
-          <Modal
-            open={modal.open}
-            setOpen={() => setModal({ ...modal, open: false })}
-          >
-            <h2 className="text-xl font-semibold text-center">
-              Deskripsi Laporan
-            </h2>
-            <p className="my-4">{modal?.data?.description}</p>
-            <div className="flex lg:gap-2 gap-0 lg:flex-row flex-col-reverse justify-end">
-              <div>
-                <Button
-                  color="white"
-                  type="button"
-                  onClick={() => {
-                    setModal({ open: false });
-                  }}
-                >
-                  Tutup
-                </Button>
-              </div>
-            </div>
-          </Modal>
-        ) : (
-          ""
-        )}
       </div>
+
+      {(modal?.key == "create" || modal?.key == "update") && (
+        <Modal open={modal.open} setOpen={() => setModal({ ...modal, open: false })}>
+          <h2 className="text-xl font-semibold text-center">Balas Laporan</h2>
+          <form onSubmit={onSubmit} className="mt-4 space-y-4">
+            <Input label="Judul" name="title" placeholder="Masukkan judul balasan" required />
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Pesan</label>
+              <textarea
+                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                name="content"
+                placeholder="Ketik pesan balasan..."
+                rows={4}
+                required
+              />
+            </div>
+            <input type="hidden" name="status" value={1} />
+            <input type="hidden" name="user_id" value={modal.data.user_id} />
+            <input type="hidden" name="id" value={modal.data.id} />
+            <div className="flex justify-end gap-3 pt-4 border-t">
+              <Button color="white" type="button" onClick={() => setModal({ open: false })}>
+                Kembali
+              </Button>
+              <Button disabled={loading} color="info" className="flex gap-2 px-4 py-2 items-center">
+                <SendIcon className="w-4 h-4" />
+                {loading ? "Mengirim..." : "Kirim"}
+              </Button>
+            </div>
+          </form>
+        </Modal>
+      )}
+
+      {modal?.key == "desc" && (
+        <Modal open={modal.open} setOpen={() => setModal({ ...modal, open: false })}>
+          <h2 className="text-xl font-semibold text-center">Deskripsi Laporan</h2>
+          <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+            <p className="text-gray-700">{modal?.data?.description}</p>
+          </div>
+          <div className="flex justify-end pt-4 border-t mt-4">
+            <Button color="white" type="button" onClick={() => setModal({ open: false })}>
+              Tutup
+            </Button>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }

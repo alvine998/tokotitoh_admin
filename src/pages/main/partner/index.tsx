@@ -7,7 +7,7 @@ import { storage } from '@/config/firebase'
 import { queryToUrlSearchParams } from '@/utils'
 import axios from 'axios'
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
-import { PencilIcon, PlusIcon, SaveAllIcon, Trash2Icon, TrashIcon } from 'lucide-react'
+import { PencilIcon, PlusIcon, SaveAllIcon, Search, Trash2Icon, TrashIcon } from 'lucide-react'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
@@ -46,6 +46,8 @@ export default function Partner({ table }: any) {
         if (e.target.files) {
             const file = e.target.files[0]
             if (file?.size <= 500000) {
+                setProgress(0);
+                setImage(null);
                 const storageRef = ref(storage, `images/partner/${file?.name}`);
                 const uploadTask = uploadBytesResumable(storageRef, file);
                 uploadTask.on('state_changed', (snapshot) => {
@@ -53,9 +55,11 @@ export default function Partner({ table }: any) {
                     setProgress(progress);
                 }, (error) => {
                     console.log(error);
+                    setProgress(null);
                 }, () => {
                     getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
                         setImage(downloadURL);
+                        setProgress(null);
                     })
                 })
             } else {
@@ -98,6 +102,8 @@ export default function Partner({ table }: any) {
                 text: "Data Berhasil Disimpan"
             })
             setLoading(false)
+            setImage(null)
+            setProgress(null)
             setModal({ ...modal, open: false })
             router.push(`?${params}`)
         } catch (error) {
@@ -152,7 +158,11 @@ export default function Partner({ table }: any) {
         {
             name: "Logo",
             sortable: true,
-            selector: (row: any) => row?.logo ? <Image alt='logo' src={row?.logo} width={300} height={300} layout='relative' className='w-[150px] h-[150px] m-2' /> : "-"
+            cell: (row: any) => row?.logo ? (
+                <Image alt='logo' src={row?.logo} width={300} height={300} layout='relative' className='w-[100px] h-[100px] m-2 rounded-lg object-cover' />
+            ) : (
+                <span className="text-gray-400">-</span>
+            )
         },
         {
             name: "Slogan",
@@ -162,129 +172,124 @@ export default function Partner({ table }: any) {
         {
             name: "Aksi",
             right: true,
-            selector: (row: any) => <div className='flex gap-2'>
-                <Button title='Edit' color='primary' onClick={() => {
-                    setModal({ ...modal, open: true, data: row, key: "update" })
-                    setImage(row?.logo)
-                }}>
-                    <PencilIcon className='text-white w-5 h-5' />
-                </Button>
-                <Button title='Hapus' color='danger' onClick={() => {
-                    setModal({ ...modal, open: true, data: row, key: "delete" })
-                }}>
-                    <TrashIcon className='text-white w-5 h-5' />
-                </Button>
-            </div>
+            cell: (row: any) => (
+                <div className="flex gap-1">
+                    <button
+                        type="button"
+                        title="Edit"
+                        onClick={() => {
+                            setModal({ ...modal, open: true, data: row, key: "update" })
+                            setImage(row?.logo)
+                        }}
+                        className="p-2 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                    >
+                        <PencilIcon className="w-4 h-4" />
+                    </button>
+                    <button
+                        type="button"
+                        title="Hapus"
+                        onClick={() => setModal({ ...modal, open: true, data: row, key: "delete" })}
+                        className="p-2 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                    >
+                        <TrashIcon className="w-4 h-4" />
+                    </button>
+                </div>
+            )
         },
     ]
     return (
-        <div>
-            <h2 className='text-2xl font-semibold'>Mitra</h2>
+        <div className="space-y-5">
+            <div>
+                <h1 className="text-2xl font-bold text-gray-900">Mitra</h1>
+                <p className="mt-1 text-sm text-gray-500">Kelola mitra dan partner bisnis.</p>
+            </div>
 
-            <div className='mt-5'>
-                <div className='flex lg:flex-row flex-col justify-between items-center'>
-                    <div className='lg:w-auto w-full'>
-                        <Input label='' type='search' placeholder='Cari disini...' />
+            <div className="bg-white rounded-xl border border-gray-200">
+                <div className="flex items-center justify-between gap-4 p-4 border-b border-gray-100">
+                    <div className="relative w-full max-w-xs">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <input
+                            type="search"
+                            placeholder="Cari mitra..."
+                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
                     </div>
-                    <div className='lg:w-auto w-full'>
-                        <Button type='button' color='info' className={'flex gap-2 px-2 items-center lg:justify-start justify-center'} onClick={() => {
-                            setModal({ ...modal, open: true, data: null, key: "create" })
-                        }}>
-                            <PlusIcon className='w-4' />
-                            Mitra
-                        </Button>
-                    </div>
+                    <Button
+                        type="button"
+                        color="info"
+                        size="auto"
+                        className="flex gap-2 px-4 py-2 items-center"
+                        onClick={() => setModal({ ...modal, open: true, data: null, key: "create" })}
+                    >
+                        <PlusIcon className="w-4 h-4" />
+                        Tambah Mitra
+                    </Button>
                 </div>
-                <div className='mt-5'>
-                    {
-                        show &&
+                <div className="p-4">
+                    {show && (
                         <DataTable
                             pagination
-                            onChangePage={(pageData) => {
-                                setFilter({ ...filter, page: pageData })
-                            }}
-                            onChangeRowsPerPage={(currentRow, currentPage) => {
-                                setFilter({ ...filter, page: currentPage, limit: currentRow })
-                            }}
+                            onChangePage={(pageData) => setFilter({ ...filter, page: pageData })}
+                            onChangeRowsPerPage={(currentRow, currentPage) => setFilter({ ...filter, page: currentPage, limit: currentRow })}
                             responsive={true}
                             paginationTotalRows={table?.items?.count}
                             paginationDefaultPage={1}
                             paginationServer={true}
-                            striped
                             columns={Column}
                             data={table?.items?.rows}
-                            selectableRows
                             customStyles={CustomTableStyle}
                         />
-                    }
+                    )}
                 </div>
-                {
-                    modal?.key == "create" || modal?.key == "update" ? <Modal open={modal.open} setOpen={() => setModal({ ...modal, open: false })}>
-                        <h2 className='text-xl font-semibold text-center'>{modal.key == 'create' ? "Tambah" : "Ubah"} Mitra</h2>
-                        <form onSubmit={onSubmit}>
-                            {
-                                modal.key == "update" &&
-                                <input type="hidden" name="id" value={modal?.data?.id || null} />
-                            }
-                            <Input label='Nama Mitra' placeholder='Masukkan Nama Mitra' name='name' defaultValue={modal?.data?.name || ""} required />
-                            <Input label='Kode Mitra' placeholder='Masukkan Kode Mitra' name='package_name' defaultValue={modal?.data?.package_name || ""} />
-                            <Input label='Logo' placeholder='Masukkan logo' type='file' onChange={handleImage} accept='image/*' />
-                            {
-                                progress && <p>Progress: {progress}%</p>
-                            }
-                            {
-                                image && <a href={image} target='_blank' className='text-blue-500'>Lihat</a>
-                            }
-                            <Input label='Slogan' placeholder='Masukkan Slogan' name='shortdesc' defaultValue={modal?.data?.shortdesc || ""} />
-                            <div className='flex lg:gap-2 gap-0 lg:flex-row flex-col-reverse justify-end'>
-                                <div>
-                                    <Button color='white' type='button' onClick={() => {
-                                        setModal({ open: false })
-                                    }}>
-                                        Kembali
-                                    </Button>
-                                </div>
-
-                                <div>
-                                    <Button disabled={loading} color='info' type='submit' className={'flex gap-2 px-2 items-center justify-center'}>
-                                        <SaveAllIcon className='w-4 h-4' />
-                                        {loading ? "Menyimpan..." : "Simpan"}
-                                    </Button>
-                                </div>
-
-                            </div>
-                        </form>
-                    </Modal>
-                        : ""
-                }
-                {
-                    modal?.key == "delete" ? <Modal open={modal.open} setOpen={() => setModal({ ...modal, open: false })}>
-                        <h2 className='text-xl font-semibold text-center'>Hapus Mitra</h2>
-                        <form onSubmit={onRemove}>
-                            <input type="hidden" name="id" value={modal?.data?.id} />
-                            <p className='text-center my-2'>Apakah anda yakin ingin menghapus data {modal?.data?.name}?</p>
-                            <div className='flex gap-2 lg:flex-row flex-col-reverse justify-end'>
-                                <div>
-                                    <Button color='white' type='button' onClick={() => {
-                                        setModal({ open: false })
-                                    }}>
-                                        Kembali
-                                    </Button>
-                                </div>
-
-                                <div>
-                                    <Button disabled={loading} type='submit' color='danger' className={'flex gap-2 px-2 items-center justify-center'}>
-                                        <Trash2Icon className='w-4 h-4' />
-                                        {loading ? "Menghapus..." : "Hapus"}
-                                    </Button>
-                                </div>
-
-                            </div>
-                        </form>
-                    </Modal>
-                        : ""
-                }
             </div>
+
+            {(modal?.key == "create" || modal?.key == "update") && (
+                <Modal open={modal.open} setOpen={() => setModal({ ...modal, open: false })}>
+                    <h2 className="text-xl font-semibold text-center">{modal.key == 'create' ? "Tambah" : "Ubah"} Mitra</h2>
+                    <form onSubmit={onSubmit} className="mt-4 space-y-4">
+                        {modal.key == "update" && <input type="hidden" name="id" value={modal?.data?.id || null} />}
+                        <Input label="Nama Mitra" placeholder="Masukkan Nama Mitra" name="name" defaultValue={modal?.data?.name || ""} required />
+                        <Input label="Kode Mitra" placeholder="Masukkan Kode Mitra" name="package_name" defaultValue={modal?.data?.package_name || ""} />
+                        <Input label="Logo" placeholder="Masukkan logo" type="file" onChange={handleImage} accept="image/*" />
+                        {progress !== null && progress !== undefined && (
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                                <div className="bg-blue-600 h-2 rounded-full transition-all" style={{ width: `${progress}%` }} />
+                            </div>
+                        )}
+                        {progress !== null && progress !== undefined && <p className="text-sm text-gray-600">{progress}%</p>}
+                        {image && <a href={image} target="_blank" className="text-sm text-blue-500 hover:underline">Lihat gambar</a>}
+                        <Input label="Slogan" placeholder="Masukkan Slogan" name="shortdesc" defaultValue={modal?.data?.shortdesc || ""} />
+                        <div className="flex justify-end gap-3 pt-4 border-t">
+                            <Button color="white" type="button" onClick={() => setModal({ open: false })}>
+                                Kembali
+                            </Button>
+                            <Button disabled={loading} color="info" type="submit" className="flex gap-2 px-4 py-2 items-center">
+                                <SaveAllIcon className="w-4 h-4" />
+                                {loading ? "Menyimpan..." : "Simpan"}
+                            </Button>
+                        </div>
+                    </form>
+                </Modal>
+            )}
+
+            {modal?.key == "delete" && (
+                <Modal open={modal.open} setOpen={() => setModal({ ...modal, open: false })}>
+                    <h2 className="text-xl font-semibold text-center">Hapus Mitra</h2>
+                    <form onSubmit={onRemove} className="mt-4">
+                        <input type="hidden" name="id" value={modal?.data?.id} />
+                        <p className="text-center my-4 text-gray-600">Apakah anda yakin ingin menghapus data <strong>{modal?.data?.name}</strong>?</p>
+                        <div className="flex justify-end gap-3 pt-4 border-t">
+                            <Button color="white" type="button" onClick={() => setModal({ open: false })}>
+                                Kembali
+                            </Button>
+                            <Button disabled={loading} type="submit" color="danger" className="flex gap-2 px-4 py-2 items-center">
+                                <Trash2Icon className="w-4 h-4" />
+                                {loading ? "Menghapus..." : "Hapus"}
+                            </Button>
+                        </div>
+                    </form>
+                </Modal>
+            )}
         </div>
     )
 }
