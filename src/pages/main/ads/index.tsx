@@ -1,23 +1,11 @@
-import Button from "@/components/Button";
-import Input from "@/components/Input";
-import Modal, { useModal } from "@/components/Modal";
 import { CustomTableStyle } from "@/components/table/CustomTableStyle";
 import { CONFIG } from "@/config";
 import { toMoney } from "@/utils";
 import axios from "axios";
-import {
-  CheckIcon,
-  EyeIcon,
-  PencilIcon,
-  PlusIcon,
-  SaveAllIcon,
-  Trash2Icon,
-  TrashIcon,
-  XIcon,
-} from "lucide-react";
+import { EyeIcon, Search } from "lucide-react";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import DataTable, { ExpanderComponentProps } from "react-data-table-component";
+import DataTable from "react-data-table-component";
 
 export async function getServerSideProps(context: any) {
   try {
@@ -40,128 +28,95 @@ export async function getServerSideProps(context: any) {
   } catch (error: any) {
     console.log(error);
     if (error?.response?.status == 401) {
-      return {
-        redirect: {
-          destination: "/",
-          permanent: false,
-        },
-      };
+      return { redirect: { destination: "/", permanent: false } };
     }
-    return {
-      props: {
-        error: error?.response?.data?.message,
-      },
-    };
+    return { props: { error: error?.response?.data?.message } };
   }
 }
 
-export default function User({ table }: any) {
+const statusBadge = (status: string) => {
+  const map: Record<string, { label: string; cls: string }> = {
+    "0": { label: "Menunggu", cls: "bg-amber-100 text-amber-700" },
+    "1": { label: "Aktif", cls: "bg-green-100 text-green-700" },
+    "2": { label: "Ditolak", cls: "bg-red-100 text-red-700" },
+  };
+  const s = map[status] || map["0"];
+  return (
+    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${s.cls}`}>
+      {s.label}
+    </span>
+  );
+};
+
+export default function AdsList({ table }: any) {
   const router = useRouter();
   const [filter, setFilter] = useState<any>(router.query);
-
   const [show, setShow] = useState<boolean>(false);
-  const [modal, setModal] = useState<useModal>();
+
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      setShow(true);
-    }
+    if (typeof window !== "undefined") setShow(true);
   }, []);
+
   useEffect(() => {
     const queryFilter = new URLSearchParams(filter).toString();
     router.push(`?${queryFilter}`);
   }, [filter]);
-  const CustomerColumn: any = [
-    {
-      name: "Judul",
-      sortable: true,
-      selector: (row: any) => row?.title,
-    },
-    {
-      name: "Pengiklan",
-      selector: (row: any) => row?.user_name,
-    },
-    {
-      name: "Harga",
-      sortable: true,
-      selector: (row: any) => toMoney(row?.price) || "-",
-    },
-    {
-      name: "Kategori",
-      sortable: true,
-      selector: (row: any) => row?.category_name,
-    },
-    {
-      name: "Status",
-      sortable: true,
-      selector: (row: any) =>
-        row?.status == "0"
-          ? "Menunggu"
-          : row?.status == "1"
-          ? "Aktif"
-          : "Ditolak",
-    },
+
+  const columns: any = [
+    { name: "Judul", sortable: true, selector: (row: any) => row?.title },
+    { name: "Pengiklan", selector: (row: any) => row?.user_name },
+    { name: "Harga", sortable: true, selector: (row: any) => toMoney(row?.price) || "-" },
+    { name: "Kategori", sortable: true, selector: (row: any) => row?.category_name },
+    { name: "Status", sortable: true, cell: (row: any) => statusBadge(row?.status) },
     {
       name: "Aksi",
-      selector: (row: any) => (
-        <div className="flex gap-2">
-          <Button
-            title="Verifikasi"
-            color="warning"
-            onClick={() => {
-              router.push(`/main/ads/${row?.id}`);
-            }}
-          >
-            <EyeIcon className="text-white w-5 h-5" />
-          </Button>
-          {/* <Button title='Verifikasi' color='primary' onClick={() => {
-                    setModal({ ...modal, open: true, data: row, key: "approved" })
-                }}>
-                    <CheckIcon className='text-white w-5 h-5' />
-                </Button>
-                <Button title='Tolak' color='danger' onClick={() => {
-                    setModal({ ...modal, open: true, data: row, key: "rejected" })
-                }}>
-                    <XIcon className='text-white w-5 h-5' />
-                </Button> */}
-        </div>
+      right: true,
+      cell: (row: any) => (
+        <button
+          type="button"
+          title="Verifikasi"
+          onClick={() => router.push(`/main/ads/${row?.id}`)}
+          className="p-2 rounded-lg text-gray-400 hover:text-amber-600 hover:bg-amber-50 transition-colors"
+        >
+          <EyeIcon className="w-4 h-4" />
+        </button>
       ),
     },
   ];
 
   return (
-    <div>
-      <h2 className="text-2xl font-semibold">Iklan</h2>
+    <div className="space-y-5">
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900">Iklan</h1>
+        <p className="mt-1 text-sm text-gray-500">Daftar seluruh iklan di platform.</p>
+      </div>
 
-      <div className="mt-5">
-        <div className="flex lg:flex-row flex-col justify-between items-center">
-          <div className="lg:w-auto w-full">
-            <Input
-              label=""
+      <div className="bg-white rounded-xl border border-gray-200">
+        <div className="flex items-center justify-between gap-4 p-4 border-b border-gray-100">
+          <div className="relative w-full max-w-xs">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
               type="search"
-              placeholder="Cari disini..."
+              placeholder="Cari iklan..."
               defaultValue={filter?.search}
-              onChange={(e) => {
-                setFilter({ ...filter, search: e.target.value });
-              }}
+              onChange={(e) => setFilter({ ...filter, search: e.target.value })}
+              className="w-full rounded-lg border border-gray-300 bg-white py-2 pl-9 pr-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-green-600 focus:ring-2 focus:ring-green-600/20 focus:outline-none transition"
             />
           </div>
         </div>
-        <div className="mt-5">
+        <div className="[&_.rdt_Table]:!border-0">
           {show && (
             <DataTable
               pagination
-              onChangePage={(pageData) => {
-                setFilter({ ...filter, page: pageData });
-              }}
-              onChangeRowsPerPage={(currentRow, currentPage) => {
-                setFilter({ ...filter, page: currentPage, size: currentRow });
-              }}
+              onChangePage={(pageData) => setFilter({ ...filter, page: pageData })}
+              onChangeRowsPerPage={(currentRow, currentPage) =>
+                setFilter({ ...filter, page: currentPage, size: currentRow })
+              }
               responsive={true}
               paginationTotalRows={table?.items?.count}
               paginationDefaultPage={1}
               paginationServer={true}
-              striped
-              columns={CustomerColumn}
+              columns={columns}
               data={table?.items?.rows}
               customStyles={CustomTableStyle}
             />

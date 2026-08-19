@@ -1,50 +1,39 @@
 import { useRouter } from "next/router";
 import React, { ReactNode, useEffect, useState } from "react";
-import Button from "../Button";
-import { ChevronLeft } from "lucide-react";
 
 export default function AdsTabs({ children }: { children: ReactNode }) {
   const router = useRouter();
   const [currentPath, setCurrentPath] = useState<string | null>(null);
 
   useEffect(() => {
-    // Ensures this only runs on the client
     setCurrentPath(router.pathname);
   }, [router.pathname]);
+
   const tabs = [
-    {
-      name: "Menunggu Persetujuan",
-      href: `/main/ads/waiting`,
-      active: "waiting",
-    },
-    {
-      name: "Disetujui",
-      href: `/main/ads/approved`,
-      active: "approved",
-    },
-    {
-      name: "Ditolak",
-      href: `/main/ads/rejected`,
-      active: "rejected",
-    },
+    { name: "Menunggu Persetujuan", href: "/main/ads/waiting", active: "waiting" },
+    { name: "Disetujui", href: "/main/ads/approved", active: "approved" },
+    { name: "Ditolak", href: "/main/ads/rejected", active: "rejected" },
   ];
+
   return (
-    <div>
-      <div className="bg-white shadow-lg rounded w-full p-4 h-full">
-        <h5 className="font-semibold text-xl">Iklan</h5>
+    <div className="space-y-5">
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900">Iklan</h1>
+        <p className="mt-1 text-sm text-gray-500">Kelola dan verifikasi iklan yang masuk.</p>
       </div>
-      <div className="flex gap-2 lg:flex-wrap flex-nowrap lg:overflow-x-hidden overflow-x-auto mt-5">
+
+      <div className="flex gap-1 border-b border-gray-200 overflow-x-auto">
         {tabs.map((tab) => {
-          const isActive = currentPath?.includes(tab.active) ?? false; // only client-side
+          const isActive = currentPath?.includes(tab.active) ?? false;
           return (
             <button
               key={tab.name}
               type="button"
-              className={
-                isActive
-                  ? "p-2 bg-blue-500 text-white rounded w-[200px]"
-                  : "p-2 bg-blue-300 hover:bg-blue-500 text-white rounded w-[200px] duration-200 transition-all"
-              }
+              className={`px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors duration-150 -mb-px
+                ${isActive
+                  ? "border-green-700 text-green-700"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                }`}
               onClick={() => router.push(tab.href, tab.href, { scroll: false })}
             >
               {tab.name}
@@ -52,7 +41,8 @@ export default function AdsTabs({ children }: { children: ReactNode }) {
           );
         })}
       </div>
-      <div className="mt-5">{children}</div>
+
+      <div>{children}</div>
     </div>
   );
 }
